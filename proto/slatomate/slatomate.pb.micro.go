@@ -6,6 +6,7 @@ package slatomate
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	math "math"
 )
 
@@ -45,6 +46,12 @@ type SlatomateService interface {
 	CreateProject(ctx context.Context, in *CreateProjectRequest, opts ...client.CallOption) (*Project, error)
 	GetAllProjct(ctx context.Context, in *GetAllProjectRequest, opts ...client.CallOption) (*GetAllProjectResponse, error)
 	GetProject(ctx context.Context, in *GetProjectRequest, opts ...client.CallOption) (*Project, error)
+	DeleteProject(ctx context.Context, in *DeleteProjectRequest, opts ...client.CallOption) (*emptypb.Empty, error)
+	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...client.CallOption) (*User, error)
+	GetUser(ctx context.Context, in *GetUserRequest, opts ...client.CallOption) (*User, error)
+	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...client.CallOption) (*emptypb.Empty, error)
+	// Admin only
+	GetAllUser(ctx context.Context, in *emptypb.Empty, opts ...client.CallOption) (*GetAllUserResponse, error)
 }
 
 type slatomateService struct {
@@ -89,12 +96,68 @@ func (c *slatomateService) GetProject(ctx context.Context, in *GetProjectRequest
 	return out, nil
 }
 
+func (c *slatomateService) DeleteProject(ctx context.Context, in *DeleteProjectRequest, opts ...client.CallOption) (*emptypb.Empty, error) {
+	req := c.c.NewRequest(c.name, "Slatomate.DeleteProject", in)
+	out := new(emptypb.Empty)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *slatomateService) CreateUser(ctx context.Context, in *CreateUserRequest, opts ...client.CallOption) (*User, error) {
+	req := c.c.NewRequest(c.name, "Slatomate.CreateUser", in)
+	out := new(User)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *slatomateService) GetUser(ctx context.Context, in *GetUserRequest, opts ...client.CallOption) (*User, error) {
+	req := c.c.NewRequest(c.name, "Slatomate.GetUser", in)
+	out := new(User)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *slatomateService) DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...client.CallOption) (*emptypb.Empty, error) {
+	req := c.c.NewRequest(c.name, "Slatomate.DeleteUser", in)
+	out := new(emptypb.Empty)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *slatomateService) GetAllUser(ctx context.Context, in *emptypb.Empty, opts ...client.CallOption) (*GetAllUserResponse, error) {
+	req := c.c.NewRequest(c.name, "Slatomate.GetAllUser", in)
+	out := new(GetAllUserResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Slatomate service
 
 type SlatomateHandler interface {
 	CreateProject(context.Context, *CreateProjectRequest, *Project) error
 	GetAllProjct(context.Context, *GetAllProjectRequest, *GetAllProjectResponse) error
 	GetProject(context.Context, *GetProjectRequest, *Project) error
+	DeleteProject(context.Context, *DeleteProjectRequest, *emptypb.Empty) error
+	CreateUser(context.Context, *CreateUserRequest, *User) error
+	GetUser(context.Context, *GetUserRequest, *User) error
+	DeleteUser(context.Context, *DeleteUserRequest, *emptypb.Empty) error
+	// Admin only
+	GetAllUser(context.Context, *emptypb.Empty, *GetAllUserResponse) error
 }
 
 func RegisterSlatomateHandler(s server.Server, hdlr SlatomateHandler, opts ...server.HandlerOption) error {
@@ -102,6 +165,11 @@ func RegisterSlatomateHandler(s server.Server, hdlr SlatomateHandler, opts ...se
 		CreateProject(ctx context.Context, in *CreateProjectRequest, out *Project) error
 		GetAllProjct(ctx context.Context, in *GetAllProjectRequest, out *GetAllProjectResponse) error
 		GetProject(ctx context.Context, in *GetProjectRequest, out *Project) error
+		DeleteProject(ctx context.Context, in *DeleteProjectRequest, out *emptypb.Empty) error
+		CreateUser(ctx context.Context, in *CreateUserRequest, out *User) error
+		GetUser(ctx context.Context, in *GetUserRequest, out *User) error
+		DeleteUser(ctx context.Context, in *DeleteUserRequest, out *emptypb.Empty) error
+		GetAllUser(ctx context.Context, in *emptypb.Empty, out *GetAllUserResponse) error
 	}
 	type Slatomate struct {
 		slatomate
@@ -124,4 +192,24 @@ func (h *slatomateHandler) GetAllProjct(ctx context.Context, in *GetAllProjectRe
 
 func (h *slatomateHandler) GetProject(ctx context.Context, in *GetProjectRequest, out *Project) error {
 	return h.SlatomateHandler.GetProject(ctx, in, out)
+}
+
+func (h *slatomateHandler) DeleteProject(ctx context.Context, in *DeleteProjectRequest, out *emptypb.Empty) error {
+	return h.SlatomateHandler.DeleteProject(ctx, in, out)
+}
+
+func (h *slatomateHandler) CreateUser(ctx context.Context, in *CreateUserRequest, out *User) error {
+	return h.SlatomateHandler.CreateUser(ctx, in, out)
+}
+
+func (h *slatomateHandler) GetUser(ctx context.Context, in *GetUserRequest, out *User) error {
+	return h.SlatomateHandler.GetUser(ctx, in, out)
+}
+
+func (h *slatomateHandler) DeleteUser(ctx context.Context, in *DeleteUserRequest, out *emptypb.Empty) error {
+	return h.SlatomateHandler.DeleteUser(ctx, in, out)
+}
+
+func (h *slatomateHandler) GetAllUser(ctx context.Context, in *emptypb.Empty, out *GetAllUserResponse) error {
+	return h.SlatomateHandler.GetAllUser(ctx, in, out)
 }

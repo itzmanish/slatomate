@@ -25,7 +25,7 @@ func main() {
 	service.Init()
 
 	// Register Handler
-	slatomate.RegisterSlatomateHandler(service.Server(), new(handler.Slatomate))
+	slatomate.RegisterSlatomateHandler(service.Server(), handler.NewHandler())
 
 	// Register Struct as Subscriber
 	micro.RegisterSubscriber("github.itzmanish.service.slatomate", service.Server(), new(subscriber.Slatomate))
