@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"github.com/itzmanish/slatomate/internal/db"
 	"github.com/itzmanish/slatomate/internal/entity"
+	"gorm.io/gorm"
 )
 
 type ProjectRepository interface {
@@ -13,10 +13,10 @@ type ProjectRepository interface {
 }
 
 type projectDB struct {
-	db *db.PostgresDB
+	db *gorm.DB
 }
 
-func NewProjectRepository(db *db.PostgresDB) ProjectRepository {
+func NewProjectRepository(db *gorm.DB) ProjectRepository {
 	return &projectDB{db}
 }
 

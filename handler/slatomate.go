@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 
+	"github.com/itzmanish/slatomate/internal/repository"
 	slatomatepb "github.com/itzmanish/slatomate/proto/slatomate"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -19,10 +20,13 @@ type SlatomateHandler interface {
 	GetAllUser(context.Context, *emptypb.Empty, *slatomatepb.GetAllUserResponse) error
 }
 
-type slatomateHandler struct{}
+type slatomateHandler struct {
+	userRepo    repository.UserRepository
+	projectRepo repository.ProjectRepository
+}
 
-func NewHandler() SlatomateHandler {
-	return &slatomateHandler{}
+func NewHandler(userRepo repository.UserRepository, projectRepo repository.ProjectRepository) SlatomateHandler {
+	return &slatomateHandler{userRepo, projectRepo}
 }
 
 func (h *slatomateHandler) CreateProject(ctx context.Context, in *slatomatepb.CreateProjectRequest, out *slatomatepb.Project) error {
@@ -38,21 +42,5 @@ func (h *slatomateHandler) GetProject(ctx context.Context, in *slatomatepb.GetPr
 }
 
 func (h *slatomateHandler) DeleteProject(ctx context.Context, in *slatomatepb.DeleteProjectRequest, out *emptypb.Empty) error {
-	return nil
-}
-
-func (h *slatomateHandler) CreateUser(ctx context.Context, in *slatomatepb.CreateUserRequest, out *slatomatepb.User) error {
-	return nil
-}
-
-func (h *slatomateHandler) GetUser(ctx context.Context, in *slatomatepb.GetUserRequest, out *slatomatepb.User) error {
-	return nil
-}
-
-func (h *slatomateHandler) DeleteUser(ctx context.Context, in *slatomatepb.DeleteUserRequest, out *emptypb.Empty) error {
-	return nil
-}
-
-func (h *slatomateHandler) GetAllUser(ctx context.Context, in *emptypb.Empty, out *slatomatepb.GetAllUserResponse) error {
 	return nil
 }

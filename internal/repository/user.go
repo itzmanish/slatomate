@@ -1,8 +1,9 @@
 package repository
 
 import (
-	"github.com/itzmanish/slatomate/internal/db"
 	"github.com/itzmanish/slatomate/internal/entity"
+	"github.com/itzmanish/slatomate/utils"
+	"gorm.io/gorm"
 )
 
 type UserRepository interface {
@@ -14,25 +15,36 @@ type UserRepository interface {
 }
 
 type userDB struct {
-	db *db.PostgresDB
+	db *gorm.DB
 }
 
-func NewUserRepository(db *db.PostgresDB) UserRepository {
+func NewUserRepository(db *gorm.DB) UserRepository {
 	return &userDB{db}
 }
 
 func (u *userDB) CreateUser(user *entity.User) (*entity.User, error) {
-	return nil, nil
+	res := u.db.Create(&user)
+	return user, utils.TranslateErrors(res)
 }
-func (u *userDB) GetUser(user *entity.User) (*entity.User, error) {
-	return nil, nil
+func (u *userDB) GetUser(query *entity.User) (*entity.User, error) {
+	var user entity.User
+	req := u.db.Where(query).First(&user)
+	return &user, utils.TranslateErrors(req)
 }
-func (u *userDB) UpdateUser(user *entity.User) (*entity.User, error) {
-	return nil, nil
+func (u *userDB) UpdateUser(params *entity.User) (*entity.User, error) {
+	user, err := u.GetUser(&entity.User{ID: params.ID})
+	if err != nil {
+		return params, err
+	}
+	req := u.db.Model(&user).Updates(params)
+	return user, utils.TranslateErrors(req)
 }
 func (u *userDB) DeleteUser(user *entity.User) error {
-	return nil
+	res := u.db.Table("users").Delete(user)
+	return utils.TranslateErrors(res)
 }
 func (u *userDB) GetAllUser() ([]*entity.User, error) {
-	return nil, nil
+	var users []*entity.User
+	req := u.db.Model(&entity.User{}).Find(&users)
+	return users, utils.TranslateErrors(req)
 }

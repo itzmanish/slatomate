@@ -9,10 +9,8 @@ import (
 	"gorm.io/gorm"
 )
 
-type PostgresDB struct{ db *gorm.DB }
-
 // New returns an instance of store.Service backed by a PG database
-func New() (*PostgresDB, error) {
+func New() (*gorm.DB, error) {
 
 	// Construct the DB Source
 	dsn := os.Getenv("POSTGRES_DSN")
@@ -28,19 +26,5 @@ func New() (*PostgresDB, error) {
 		return nil, err
 	}
 	db.AutoMigrate(&entity.User{}, &entity.Project{})
-	return &PostgresDB{db}, nil
-}
-
-// Close will terminate the database connection
-func (p PostgresDB) Close() error {
-	sqlDB, err := p.db.DB()
-	if err != nil {
-		return err
-	}
-	return sqlDB.Close()
-}
-
-// String will return database driver
-func (p PostgresDB) String() string {
-	return "postgres"
+	return db, nil
 }
