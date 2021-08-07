@@ -1,0 +1,36 @@
+syntax = "proto3";
+
+package github.itzmanish.service.slatomate;
+option go_package="proto/slatomate";
+
+service Slatomate {
+	rpc CreateProject (CreateProjectRequest) returns (Project) {};
+	rpc GetAllProjct (GetAllProjectRequest) returns (GetAllProjectResponse) {};
+	rpc GetProject (GetProjectRequest) returns (Project) {};
+}
+
+message Message {
+	string say = 1;
+}
+
+message CreateProjectRequest {
+	string name = 1;
+}
+
+
+message GetAllProjectRequest{
+	string user_id = 1;
+}
+
+message GetAllProjectResponse{
+	repeated Project projects = 1;
+}
+
+message GetProjectRequest{
+	string project_id = 1;
+}
+
+message Project {
+	string id = 1;
+	string name =2;
+}
