@@ -26,11 +26,13 @@ func (u *userDB) CreateUser(user *entity.User) (*entity.User, error) {
 	res := u.db.Create(&user)
 	return user, utils.TranslateErrors(res)
 }
+
 func (u *userDB) GetUser(query *entity.User) (*entity.User, error) {
 	var user entity.User
 	req := u.db.Where(query).First(&user)
 	return &user, utils.TranslateErrors(req)
 }
+
 func (u *userDB) UpdateUser(params *entity.User) (*entity.User, error) {
 	user, err := u.GetUser(&entity.User{ID: params.ID})
 	if err != nil {
@@ -39,10 +41,12 @@ func (u *userDB) UpdateUser(params *entity.User) (*entity.User, error) {
 	req := u.db.Model(&user).Updates(params)
 	return user, utils.TranslateErrors(req)
 }
+
 func (u *userDB) DeleteUser(user *entity.User) error {
 	res := u.db.Table("users").Delete(user)
 	return utils.TranslateErrors(res)
 }
+
 func (u *userDB) GetAllUser() ([]*entity.User, error) {
 	var users []*entity.User
 	req := u.db.Model(&entity.User{}).Find(&users)

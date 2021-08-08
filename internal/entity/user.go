@@ -14,13 +14,13 @@ import (
 
 // User represent a user object
 type User struct {
-	ID          uuid.UUID `json:"uuid" gorm:"primary_key; unique; type:uuid;"`
-	Name        string    `json:"name" gorm:"type:varchar(100)"`
-	Email       string    `json:"email" gorm:"type:varchar(100)"`
-	Password    string    `json:"password" gorm:"type:varchar(200)"`
-	SlackAPIKey string    `json:"gender"`
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	ID        uuid.UUID `json:"uuid" gorm:"primary_key; unique; type:uuid;"`
+	Name      string    `json:"name" gorm:"type:varchar(100)"`
+	Email     string    `json:"email" gorm:"type:varchar(100)"`
+	Password  string    `json:"password" gorm:"type:varchar(200)"`
+	APIKey    string    `json:"api_key"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 // BeforeCreate will set a UUID rather than numeric ID.
@@ -37,6 +37,15 @@ func (user *User) SetPassword(password string) error {
 		return err
 	}
 	user.Password = hash
+	return nil
+}
+
+func (user *User) GenerateAPIKey() error {
+	APIKey := utils.RandomString(28)
+	if len(APIKey) != 28 {
+		return errors.New("failed to generate api key")
+	}
+	user.APIKey = APIKey
 	return nil
 }
 
@@ -84,6 +93,7 @@ func DeserializeUser(in *User) slatomate.User {
 		Id:        in.ID.String(),
 		Name:      in.Name,
 		Email:     in.Email,
+		ApiKey:    in.APIKey,
 		CreatedAt: in.CreatedAt.Format(time.RFC3339),
 	}
 }

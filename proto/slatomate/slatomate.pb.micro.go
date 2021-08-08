@@ -50,6 +50,9 @@ type SlatomateService interface {
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...client.CallOption) (*User, error)
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...client.CallOption) (*User, error)
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...client.CallOption) (*emptypb.Empty, error)
+	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...client.CallOption) (*User, error)
+	// Not for now
+	GenerateAPIKey(ctx context.Context, in *GenerateAPIKeyRequest, opts ...client.CallOption) (*GenerateAPIKeyResponse, error)
 	// Admin only
 	GetAllUser(ctx context.Context, in *emptypb.Empty, opts ...client.CallOption) (*GetAllUserResponse, error)
 }
@@ -136,6 +139,26 @@ func (c *slatomateService) DeleteUser(ctx context.Context, in *DeleteUserRequest
 	return out, nil
 }
 
+func (c *slatomateService) UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...client.CallOption) (*User, error) {
+	req := c.c.NewRequest(c.name, "Slatomate.UpdateUser", in)
+	out := new(User)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *slatomateService) GenerateAPIKey(ctx context.Context, in *GenerateAPIKeyRequest, opts ...client.CallOption) (*GenerateAPIKeyResponse, error) {
+	req := c.c.NewRequest(c.name, "Slatomate.GenerateAPIKey", in)
+	out := new(GenerateAPIKeyResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *slatomateService) GetAllUser(ctx context.Context, in *emptypb.Empty, opts ...client.CallOption) (*GetAllUserResponse, error) {
 	req := c.c.NewRequest(c.name, "Slatomate.GetAllUser", in)
 	out := new(GetAllUserResponse)
@@ -156,6 +179,9 @@ type SlatomateHandler interface {
 	CreateUser(context.Context, *CreateUserRequest, *User) error
 	GetUser(context.Context, *GetUserRequest, *User) error
 	DeleteUser(context.Context, *DeleteUserRequest, *emptypb.Empty) error
+	UpdateUser(context.Context, *UpdateUserRequest, *User) error
+	// Not for now
+	GenerateAPIKey(context.Context, *GenerateAPIKeyRequest, *GenerateAPIKeyResponse) error
 	// Admin only
 	GetAllUser(context.Context, *emptypb.Empty, *GetAllUserResponse) error
 }
@@ -169,6 +195,8 @@ func RegisterSlatomateHandler(s server.Server, hdlr SlatomateHandler, opts ...se
 		CreateUser(ctx context.Context, in *CreateUserRequest, out *User) error
 		GetUser(ctx context.Context, in *GetUserRequest, out *User) error
 		DeleteUser(ctx context.Context, in *DeleteUserRequest, out *emptypb.Empty) error
+		UpdateUser(ctx context.Context, in *UpdateUserRequest, out *User) error
+		GenerateAPIKey(ctx context.Context, in *GenerateAPIKeyRequest, out *GenerateAPIKeyResponse) error
 		GetAllUser(ctx context.Context, in *emptypb.Empty, out *GetAllUserResponse) error
 	}
 	type Slatomate struct {
@@ -208,6 +236,14 @@ func (h *slatomateHandler) GetUser(ctx context.Context, in *GetUserRequest, out 
 
 func (h *slatomateHandler) DeleteUser(ctx context.Context, in *DeleteUserRequest, out *emptypb.Empty) error {
 	return h.SlatomateHandler.DeleteUser(ctx, in, out)
+}
+
+func (h *slatomateHandler) UpdateUser(ctx context.Context, in *UpdateUserRequest, out *User) error {
+	return h.SlatomateHandler.UpdateUser(ctx, in, out)
+}
+
+func (h *slatomateHandler) GenerateAPIKey(ctx context.Context, in *GenerateAPIKeyRequest, out *GenerateAPIKeyResponse) error {
+	return h.SlatomateHandler.GenerateAPIKey(ctx, in, out)
 }
 
 func (h *slatomateHandler) GetAllUser(ctx context.Context, in *emptypb.Empty, out *GetAllUserResponse) error {

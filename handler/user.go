@@ -24,7 +24,14 @@ func (h *slatomateHandler) CreateUser(ctx context.Context, in *slatomatepb.Creat
 		Email: in.Email,
 	}
 
-	user.SetPassword(in.GetPassword())
+	err := user.SetPassword(in.GetPassword())
+	if err != nil {
+		return err
+	}
+	err = user.GenerateAPIKey()
+	if err != nil {
+		return err
+	}
 
 	resUser, err := h.userRepo.CreateUser(user)
 	if err != nil {
@@ -35,7 +42,7 @@ func (h *slatomateHandler) CreateUser(ctx context.Context, in *slatomatepb.Creat
 }
 
 func (h *slatomateHandler) GetUser(ctx context.Context, in *slatomatepb.GetUserRequest, out *slatomatepb.User) error {
-	if len(in.GetId()) == 0 && len(in.GetEmail()) == 0 {
+	if len(in.GetId()) == 0 && len(in.GetEmail()) == 0 && len(in.GetApiKey()) == 0 {
 		return errors.BadRequest("GET_USER_HANDLER", "user id or email is required.")
 	}
 	filter := &entity.User{}
@@ -45,6 +52,8 @@ func (h *slatomateHandler) GetUser(ctx context.Context, in *slatomatepb.GetUserR
 			return err
 		}
 		filter.ID = id
+	} else if len(in.GetApiKey()) != 0 {
+		filter.APIKey = in.ApiKey
 	} else {
 		filter.Email = in.GetEmail()
 	}
@@ -68,6 +77,22 @@ func (h *slatomateHandler) DeleteUser(ctx context.Context, in *slatomatepb.Delet
 	return h.userRepo.DeleteUser(&entity.User{ID: id})
 }
 
+func (h *slatomateHandler) UpdateUser(ctx context.Context, in *slatomatepb.UpdateUserRequest, out *slatomatepb.User) error {
+	if len(in.GetId()) == 0 {
+		return errors.BadRequest("DELETE_USER_HANDLER", "user id is required!")
+	}
+	id, err := uuid.Parse(in.GetId())
+	if err != nil {
+		return err
+	}
+	updatedUser, err := h.userRepo.UpdateUser(&entity.User{ID: id, Name: in.GetName()})
+	if err != nil {
+		return err
+	}
+	*out = entity.DeserializeUser(updatedUser)
+	return nil
+}
+
 func (h *slatomateHandler) GetAllUser(ctx context.Context, in *emptypb.Empty, out *slatomatepb.GetAllUserResponse) error {
 	users, err := h.userRepo.GetAllUser()
 	if err != nil {
@@ -79,5 +104,10 @@ func (h *slatomateHandler) GetAllUser(ctx context.Context, in *emptypb.Empty, ou
 		puser := entity.DeserializeUser(user)
 		out.Users[i] = &puser
 	}
+	return nil
+}
+
+// Not for now
+func (h *slatomateHandler) GenerateAPIKey(ctx context.Context, in *slatomatepb.GenerateAPIKeyRequest, out *slatomatepb.GenerateAPIKeyResponse) error {
 	return nil
 }

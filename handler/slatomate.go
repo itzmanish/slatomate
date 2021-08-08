@@ -16,6 +16,8 @@ type SlatomateHandler interface {
 	CreateUser(context.Context, *slatomatepb.CreateUserRequest, *slatomatepb.User) error
 	GetUser(context.Context, *slatomatepb.GetUserRequest, *slatomatepb.User) error
 	DeleteUser(context.Context, *slatomatepb.DeleteUserRequest, *emptypb.Empty) error
+	UpdateUser(context.Context, *slatomatepb.UpdateUserRequest, *slatomatepb.User) error
+	GenerateAPIKey(context.Context, *slatomatepb.GenerateAPIKeyRequest, *slatomatepb.GenerateAPIKeyResponse) error
 	// Admin only
 	GetAllUser(context.Context, *emptypb.Empty, *slatomatepb.GetAllUserResponse) error
 }
@@ -27,20 +29,4 @@ type slatomateHandler struct {
 
 func NewHandler(userRepo repository.UserRepository, projectRepo repository.ProjectRepository) SlatomateHandler {
 	return &slatomateHandler{userRepo, projectRepo}
-}
-
-func (h *slatomateHandler) CreateProject(ctx context.Context, in *slatomatepb.CreateProjectRequest, out *slatomatepb.Project) error {
-	return nil
-}
-
-func (h *slatomateHandler) GetAllProjct(ctx context.Context, in *slatomatepb.GetAllProjectRequest, out *slatomatepb.GetAllProjectResponse) error {
-	return nil
-}
-
-func (h *slatomateHandler) GetProject(ctx context.Context, in *slatomatepb.GetProjectRequest, out *slatomatepb.Project) error {
-	return nil
-}
-
-func (h *slatomateHandler) DeleteProject(ctx context.Context, in *slatomatepb.DeleteProjectRequest, out *emptypb.Empty) error {
-	return nil
 }
