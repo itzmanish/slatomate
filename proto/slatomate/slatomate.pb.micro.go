@@ -7,6 +7,7 @@ import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	math "math"
 )
 
@@ -44,6 +45,7 @@ func NewSlatomateEndpoints() []*api.Endpoint {
 
 type SlatomateService interface {
 	CreateOrganization(ctx context.Context, in *CreateOrganizationRequest, opts ...client.CallOption) (*Organization, error)
+	AuthorizeOrganization(ctx context.Context, in *AuthorizeOrganizationRequest, opts ...client.CallOption) (*emptypb.Empty, error)
 	GetAllOrganization(ctx context.Context, in *GetAllOrganizationRequest, opts ...client.CallOption) (*GetAllOrganizationResponse, error)
 	GetOrganization(ctx context.Context, in *GetOrganizationRequest, opts ...client.CallOption) (*Organization, error)
 	DeleteOrganization(ctx context.Context, in *DeleteOrganizationRequest, opts ...client.CallOption) (*emptypb.Empty, error)
@@ -55,6 +57,11 @@ type SlatomateService interface {
 	GenerateAPIKey(ctx context.Context, in *GenerateAPIKeyRequest, opts ...client.CallOption) (*GenerateAPIKeyResponse, error)
 	// Admin only
 	GetAllUser(ctx context.Context, in *emptypb.Empty, opts ...client.CallOption) (*GetAllUserResponse, error)
+	// Jobs
+	CreateJob(ctx context.Context, in *CreateJobRequest, opts ...client.CallOption) (*Job, error)
+	GetJob(ctx context.Context, in *GetJobRequest, opts ...client.CallOption) (*Job, error)
+	DeleteJob(ctx context.Context, in *DeleteJobRequest, opts ...client.CallOption) (*emptypb.Empty, error)
+	GetAllJob(ctx context.Context, in *GetAllJobRequset, opts ...client.CallOption) (*GetAllJobResponse, error)
 }
 
 type slatomateService struct {
@@ -72,6 +79,16 @@ func NewSlatomateService(name string, c client.Client) SlatomateService {
 func (c *slatomateService) CreateOrganization(ctx context.Context, in *CreateOrganizationRequest, opts ...client.CallOption) (*Organization, error) {
 	req := c.c.NewRequest(c.name, "Slatomate.CreateOrganization", in)
 	out := new(Organization)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *slatomateService) AuthorizeOrganization(ctx context.Context, in *AuthorizeOrganizationRequest, opts ...client.CallOption) (*emptypb.Empty, error) {
+	req := c.c.NewRequest(c.name, "Slatomate.AuthorizeOrganization", in)
+	out := new(emptypb.Empty)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -169,10 +186,51 @@ func (c *slatomateService) GetAllUser(ctx context.Context, in *emptypb.Empty, op
 	return out, nil
 }
 
+func (c *slatomateService) CreateJob(ctx context.Context, in *CreateJobRequest, opts ...client.CallOption) (*Job, error) {
+	req := c.c.NewRequest(c.name, "Slatomate.CreateJob", in)
+	out := new(Job)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *slatomateService) GetJob(ctx context.Context, in *GetJobRequest, opts ...client.CallOption) (*Job, error) {
+	req := c.c.NewRequest(c.name, "Slatomate.GetJob", in)
+	out := new(Job)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *slatomateService) DeleteJob(ctx context.Context, in *DeleteJobRequest, opts ...client.CallOption) (*emptypb.Empty, error) {
+	req := c.c.NewRequest(c.name, "Slatomate.DeleteJob", in)
+	out := new(emptypb.Empty)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *slatomateService) GetAllJob(ctx context.Context, in *GetAllJobRequset, opts ...client.CallOption) (*GetAllJobResponse, error) {
+	req := c.c.NewRequest(c.name, "Slatomate.GetAllJob", in)
+	out := new(GetAllJobResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Server API for Slatomate service
 
 type SlatomateHandler interface {
 	CreateOrganization(context.Context, *CreateOrganizationRequest, *Organization) error
+	AuthorizeOrganization(context.Context, *AuthorizeOrganizationRequest, *emptypb.Empty) error
 	GetAllOrganization(context.Context, *GetAllOrganizationRequest, *GetAllOrganizationResponse) error
 	GetOrganization(context.Context, *GetOrganizationRequest, *Organization) error
 	DeleteOrganization(context.Context, *DeleteOrganizationRequest, *emptypb.Empty) error
@@ -184,11 +242,17 @@ type SlatomateHandler interface {
 	GenerateAPIKey(context.Context, *GenerateAPIKeyRequest, *GenerateAPIKeyResponse) error
 	// Admin only
 	GetAllUser(context.Context, *emptypb.Empty, *GetAllUserResponse) error
+	// Jobs
+	CreateJob(context.Context, *CreateJobRequest, *Job) error
+	GetJob(context.Context, *GetJobRequest, *Job) error
+	DeleteJob(context.Context, *DeleteJobRequest, *emptypb.Empty) error
+	GetAllJob(context.Context, *GetAllJobRequset, *GetAllJobResponse) error
 }
 
 func RegisterSlatomateHandler(s server.Server, hdlr SlatomateHandler, opts ...server.HandlerOption) error {
 	type slatomate interface {
 		CreateOrganization(ctx context.Context, in *CreateOrganizationRequest, out *Organization) error
+		AuthorizeOrganization(ctx context.Context, in *AuthorizeOrganizationRequest, out *emptypb.Empty) error
 		GetAllOrganization(ctx context.Context, in *GetAllOrganizationRequest, out *GetAllOrganizationResponse) error
 		GetOrganization(ctx context.Context, in *GetOrganizationRequest, out *Organization) error
 		DeleteOrganization(ctx context.Context, in *DeleteOrganizationRequest, out *emptypb.Empty) error
@@ -198,6 +262,10 @@ func RegisterSlatomateHandler(s server.Server, hdlr SlatomateHandler, opts ...se
 		UpdateUser(ctx context.Context, in *UpdateUserRequest, out *User) error
 		GenerateAPIKey(ctx context.Context, in *GenerateAPIKeyRequest, out *GenerateAPIKeyResponse) error
 		GetAllUser(ctx context.Context, in *emptypb.Empty, out *GetAllUserResponse) error
+		CreateJob(ctx context.Context, in *CreateJobRequest, out *Job) error
+		GetJob(ctx context.Context, in *GetJobRequest, out *Job) error
+		DeleteJob(ctx context.Context, in *DeleteJobRequest, out *emptypb.Empty) error
+		GetAllJob(ctx context.Context, in *GetAllJobRequset, out *GetAllJobResponse) error
 	}
 	type Slatomate struct {
 		slatomate
@@ -212,6 +280,10 @@ type slatomateHandler struct {
 
 func (h *slatomateHandler) CreateOrganization(ctx context.Context, in *CreateOrganizationRequest, out *Organization) error {
 	return h.SlatomateHandler.CreateOrganization(ctx, in, out)
+}
+
+func (h *slatomateHandler) AuthorizeOrganization(ctx context.Context, in *AuthorizeOrganizationRequest, out *emptypb.Empty) error {
+	return h.SlatomateHandler.AuthorizeOrganization(ctx, in, out)
 }
 
 func (h *slatomateHandler) GetAllOrganization(ctx context.Context, in *GetAllOrganizationRequest, out *GetAllOrganizationResponse) error {
@@ -248,4 +320,20 @@ func (h *slatomateHandler) GenerateAPIKey(ctx context.Context, in *GenerateAPIKe
 
 func (h *slatomateHandler) GetAllUser(ctx context.Context, in *emptypb.Empty, out *GetAllUserResponse) error {
 	return h.SlatomateHandler.GetAllUser(ctx, in, out)
+}
+
+func (h *slatomateHandler) CreateJob(ctx context.Context, in *CreateJobRequest, out *Job) error {
+	return h.SlatomateHandler.CreateJob(ctx, in, out)
+}
+
+func (h *slatomateHandler) GetJob(ctx context.Context, in *GetJobRequest, out *Job) error {
+	return h.SlatomateHandler.GetJob(ctx, in, out)
+}
+
+func (h *slatomateHandler) DeleteJob(ctx context.Context, in *DeleteJobRequest, out *emptypb.Empty) error {
+	return h.SlatomateHandler.DeleteJob(ctx, in, out)
+}
+
+func (h *slatomateHandler) GetAllJob(ctx context.Context, in *GetAllJobRequset, out *GetAllJobResponse) error {
+	return h.SlatomateHandler.GetAllJob(ctx, in, out)
 }

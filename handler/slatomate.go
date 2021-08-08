@@ -10,6 +10,7 @@ import (
 
 type SlatomateHandler interface {
 	CreateOrganization(context.Context, *slatomatepb.CreateOrganizationRequest, *slatomatepb.Organization) error
+	AuthorizeOrganization(ctx context.Context, in *slatomatepb.AuthorizeOrganizationRequest, out *emptypb.Empty) error
 	GetAllOrganization(context.Context, *slatomatepb.GetAllOrganizationRequest, *slatomatepb.GetAllOrganizationResponse) error
 	GetOrganization(context.Context, *slatomatepb.GetOrganizationRequest, *slatomatepb.Organization) error
 	DeleteOrganization(context.Context, *slatomatepb.DeleteOrganizationRequest, *emptypb.Empty) error
@@ -20,6 +21,11 @@ type SlatomateHandler interface {
 	GenerateAPIKey(context.Context, *slatomatepb.GenerateAPIKeyRequest, *slatomatepb.GenerateAPIKeyResponse) error
 	// Admin only
 	GetAllUser(context.Context, *emptypb.Empty, *slatomatepb.GetAllUserResponse) error
+	// Jobs
+	CreateJob(context.Context, *slatomatepb.CreateJobRequest, *slatomatepb.Job) error
+	GetJob(context.Context, *slatomatepb.GetJobRequest, *slatomatepb.Job) error
+	DeleteJob(context.Context, *slatomatepb.DeleteJobRequest, *emptypb.Empty) error
+	GetAllJob(context.Context, *slatomatepb.GetAllJobRequset, *slatomatepb.GetAllJobResponse) error
 }
 
 type slatomateHandler struct {

@@ -2,23 +2,27 @@ package handler
 
 import (
 	"context"
+	"net/http"
+	"os"
 
 	"github.com/google/uuid"
 	"github.com/itzmanish/go-micro/v2/errors"
+	"github.com/itzmanish/go-micro/v2/logger"
 	"github.com/itzmanish/slatomate/internal/entity"
 	slatomatepb "github.com/itzmanish/slatomate/proto/slatomate"
+	"github.com/slack-go/slack"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func (h *slatomateHandler) CreateOrganization(ctx context.Context, in *slatomatepb.CreateOrganizationRequest, out *slatomatepb.Organization) error {
-	if len(in.GetName()) == 0 || len(in.GetSlackApikey()) == 0 {
-		return errors.BadRequest("CREATE_ORG_HANDLER", "Name and slack api key both are required.")
+	if len(in.GetName()) == 0 {
+		return errors.BadRequest("CREATE_ORG_HANDLER", "Name is required.")
 	}
 	uid, err := uuid.Parse(in.UserId)
 	if err != nil {
 		return errors.BadRequest("CREATE_ORG_HANDLER", "user id is wrong.")
 	}
-	cp, err := h.orgRepo.CreateOrganization(&entity.Organization{Name: in.GetName(), SlackAPIKey: in.SlackApikey, UserID: uid})
+	cp, err := h.orgRepo.CreateOrganization(&entity.Organization{Name: in.GetName(), UserID: uid})
 	if err != nil {
 		return err
 	}
@@ -83,4 +87,17 @@ func (h *slatomateHandler) DeleteOrganization(ctx context.Context, in *slatomate
 	}
 
 	return h.orgRepo.DeleteOrganization(&entity.Organization{ID: oid, UserID: uid})
+}
+
+func (h *slatomateHandler) AuthorizeOrganization(ctx context.Context, in *slatomatepb.AuthorizeOrganizationRequest, out *emptypb.Empty) error {
+	logger.Info("Authorize Organization request: %v", in)
+	if len(in.Code) == 0 {
+		return errors.BadRequest("AUTHORIZE_ORG", "code is invalid!")
+	}
+	sres, err := slack.GetOAuthV2Response(http.DefaultClient, os.Getenv("SLACK_CLIENT_ID"), os.Getenv("SLACK_CLIENT_SECRET"), in.Code, os.Getenv("SLACK_REDIRECT_URI"))
+	if err != nil {
+		return err
+	}
+	logger.Info(sres)
+	return nil
 }

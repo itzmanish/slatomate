@@ -4,9 +4,11 @@ package github.itzmanish.service.slatomate;
 option go_package="proto/slatomate";
 
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
 
 service Slatomate {
 	rpc CreateOrganization (CreateOrganizationRequest) returns (Organization) {};
+	rpc AuthorizeOrganization (AuthorizeOrganizationRequest) returns (google.protobuf.Empty){};
 	rpc GetAllOrganization (GetAllOrganizationRequest) returns (GetAllOrganizationResponse) {};
 	rpc GetOrganization (GetOrganizationRequest) returns (Organization) {};
 	rpc DeleteOrganization (DeleteOrganizationRequest) returns (google.protobuf.Empty) {};
@@ -19,6 +21,12 @@ service Slatomate {
 	rpc GenerateAPIKey (GenerateAPIKeyRequest) returns (GenerateAPIKeyResponse) {};
 	// Admin only
 	rpc GetAllUser (google.protobuf.Empty) returns (GetAllUserResponse) {};
+
+	// Jobs
+	rpc CreateJob (CreateJobRequest) returns (Job){};
+	rpc GetJob (GetJobRequest) returns (Job){};
+	rpc DeleteJob (DeleteJobRequest) returns (google.protobuf.Empty){};
+	rpc GetAllJob (GetAllJobRequset) returns (GetAllJobResponse){};
 }
 
 message Message {
@@ -30,8 +38,12 @@ message Message {
 
 message CreateOrganizationRequest {
 	string name = 1;
-	string slack_apikey = 2;
 	string user_id = 3;
+}
+
+message AuthorizeOrganizationRequest {
+	string code = 1;
+	string scope = 2;
 }
 
 
@@ -105,4 +117,49 @@ message User {
 	string api_key = 4;
 	string created_at = 5;
 	string last_updated = 6;
+}
+
+// ====================== Job ====================
+
+message CreateJobRequest{
+	string name = 1;
+	string schedule_at = 2;
+	string org_id = 3;
+	Task task = 4;
+	map<string,string> body = 5;
+}
+
+message GetJobRequest{
+	string id = 1;
+	string org_id = 2;
+	string name = 3;
+}
+
+message GetAllJobRequset {
+	string org_id = 1;
+}
+
+message DeleteJobRequest {
+	string id = 1;
+	string org_id = 2;
+}
+
+message GetAllJobResponse {
+	int32 count = 1;
+	repeated Job jobs = 2;
+}
+
+message Job {
+	string id = 1;
+	string org_id = 2;
+	string name = 3;
+	string schedule_at = 4;
+	Task task = 5;
+	string status = 6;
+	google.protobuf.Timestamp created_at  =7;
+}
+
+enum Task {
+	DEFAULT = 0;
+	STATUS_UPDATE = 1;
 }

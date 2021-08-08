@@ -12,6 +12,9 @@ require (
 	github.com/google/uuid v1.2.0
 	github.com/itzmanish/go-micro/v2 v2.10.0
 	github.com/joho/godotenv v1.3.0
+	github.com/robfig/cron/v3 v3.0.0 // indirect
+	github.com/slack-go/slack v0.9.4
+	github.com/stretchr/testify v1.7.0
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2
 	google.golang.org/protobuf v1.27.1
 	gorm.io/driver/postgres v1.1.0
