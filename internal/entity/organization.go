@@ -10,9 +10,10 @@ import (
 
 // Organization represent an organization
 type Organization struct {
-	ID          uuid.UUID
-	Name        string
+	ID          uuid.UUID `json:"uuid" gorm:"primary_key; unique; type:uuid;"`
+	Name        string    `json:"name" gorm:"type:varchar(100)"`
 	SlackAPIKey string
+	Jobs        []*Job
 	UserID      uuid.UUID
 	CreatedAt   time.Time
 	UpdatedAt   time.Time

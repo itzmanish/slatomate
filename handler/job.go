@@ -3,11 +3,14 @@ package handler
 import (
 	"context"
 
+	"github.com/itzmanish/go-micro/v2/logger"
 	slatomatepb "github.com/itzmanish/slatomate/proto/slatomate"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 func (h *slatomateHandler) CreateJob(ctx context.Context, in *slatomatepb.CreateJobRequest, out *slatomatepb.Job) error {
+	logger.Debug("Create job request: ", in)
+
 	return nil
 }
 

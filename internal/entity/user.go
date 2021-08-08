@@ -14,13 +14,14 @@ import (
 
 // User represent a user object
 type User struct {
-	ID        uuid.UUID `json:"uuid" gorm:"primary_key; unique; type:uuid;"`
-	Name      string    `json:"name" gorm:"type:varchar(100)"`
-	Email     string    `json:"email" gorm:"type:varchar(100)"`
-	Password  string    `json:"password" gorm:"type:varchar(200)"`
-	APIKey    string    `json:"api_key"`
-	CreatedAt time.Time
-	UpdatedAt time.Time
+	ID            uuid.UUID `json:"uuid" gorm:"primary_key; unique; type:uuid;"`
+	Name          string    `json:"name" gorm:"type:varchar(100)"`
+	Email         string    `json:"email" gorm:"type:varchar(100)"`
+	Password      string    `json:"password" gorm:"type:varchar(200)"`
+	APIKey        string    `json:"api_key"`
+	Organizations []*Organization
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
 }
 
 // BeforeCreate will set a UUID rather than numeric ID.

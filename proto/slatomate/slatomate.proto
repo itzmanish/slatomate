@@ -156,7 +156,8 @@ message Job {
 	string schedule_at = 4;
 	Task task = 5;
 	string status = 6;
-	google.protobuf.Timestamp created_at  =7;
+	map<string,string> data = 7;
+	google.protobuf.Timestamp created_at = 8;
 }
 
 enum Task {

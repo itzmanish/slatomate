@@ -1290,7 +1290,8 @@ type Job struct {
 	ScheduleAt string                 `protobuf:"bytes,4,opt,name=schedule_at,json=scheduleAt,proto3" json:"schedule_at,omitempty"`
 	Task       Task                   `protobuf:"varint,5,opt,name=task,proto3,enum=github.itzmanish.service.slatomate.Task" json:"task,omitempty"`
 	Status     string                 `protobuf:"bytes,6,opt,name=status,proto3" json:"status,omitempty"`
-	CreatedAt  *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	Data       map[string]string      `protobuf:"bytes,7,rep,name=data,proto3" json:"data,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
+	CreatedAt  *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
 }
 
 func (x *Job) Reset() {
@@ -1365,6 +1366,13 @@ func (x *Job) GetStatus() string {
 		return x.Status
 	}
 	return ""
+}
+
+func (x *Job) GetData() map[string]string {
+	if x != nil {
+		return x.Data
+	}
+	return nil
 }
 
 func (x *Job) GetCreatedAt() *timestamppb.Timestamp {
@@ -1501,7 +1509,7 @@ var file_proto_slatomate_slatomate_proto_rawDesc = []byte{
 	0x28, 0x0b, 0x32, 0x27, 0x2e, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x69, 0x74, 0x7a, 0x6d,
 	0x61, 0x6e, 0x69, 0x73, 0x68, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x73, 0x6c,
 	0x61, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x65, 0x2e, 0x4a, 0x6f, 0x62, 0x52, 0x04, 0x6a, 0x6f, 0x62,
-	0x73, 0x22, 0xf2, 0x01, 0x0a, 0x03, 0x4a, 0x6f, 0x62, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18,
+	0x73, 0x22, 0xf2, 0x02, 0x0a, 0x03, 0x4a, 0x6f, 0x62, 0x12, 0x0e, 0x0a, 0x02, 0x69, 0x64, 0x18,
 	0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x02, 0x69, 0x64, 0x12, 0x15, 0x0a, 0x06, 0x6f, 0x72, 0x67,
 	0x5f, 0x69, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x6f, 0x72, 0x67, 0x49, 0x64,
 	0x12, 0x12, 0x0a, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x18, 0x03, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04,
@@ -1512,11 +1520,19 @@ var file_proto_slatomate_slatomate_proto_rawDesc = []byte{
 	0x6d, 0x61, 0x6e, 0x69, 0x73, 0x68, 0x2e, 0x73, 0x65, 0x72, 0x76, 0x69, 0x63, 0x65, 0x2e, 0x73,
 	0x6c, 0x61, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x65, 0x2e, 0x54, 0x61, 0x73, 0x6b, 0x52, 0x04, 0x74,
 	0x61, 0x73, 0x6b, 0x12, 0x16, 0x0a, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x18, 0x06, 0x20,
-	0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x39, 0x0a, 0x0a, 0x63,
-	0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x61, 0x74, 0x18, 0x07, 0x20, 0x01, 0x28, 0x0b, 0x32,
-	0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75,
-	0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61, 0x6d, 0x70, 0x52, 0x09, 0x63, 0x72, 0x65,
-	0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x2a, 0x26, 0x0a, 0x04, 0x54, 0x61, 0x73, 0x6b, 0x12, 0x0b,
+	0x01, 0x28, 0x09, 0x52, 0x06, 0x73, 0x74, 0x61, 0x74, 0x75, 0x73, 0x12, 0x45, 0x0a, 0x04, 0x64,
+	0x61, 0x74, 0x61, 0x18, 0x07, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x31, 0x2e, 0x67, 0x69, 0x74, 0x68,
+	0x75, 0x62, 0x2e, 0x69, 0x74, 0x7a, 0x6d, 0x61, 0x6e, 0x69, 0x73, 0x68, 0x2e, 0x73, 0x65, 0x72,
+	0x76, 0x69, 0x63, 0x65, 0x2e, 0x73, 0x6c, 0x61, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x65, 0x2e, 0x4a,
+	0x6f, 0x62, 0x2e, 0x44, 0x61, 0x74, 0x61, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x52, 0x04, 0x64, 0x61,
+	0x74, 0x61, 0x12, 0x39, 0x0a, 0x0a, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x5f, 0x61, 0x74,
+	0x18, 0x08, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1a, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e,
+	0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x54, 0x69, 0x6d, 0x65, 0x73, 0x74, 0x61,
+	0x6d, 0x70, 0x52, 0x09, 0x63, 0x72, 0x65, 0x61, 0x74, 0x65, 0x64, 0x41, 0x74, 0x1a, 0x37, 0x0a,
+	0x09, 0x44, 0x61, 0x74, 0x61, 0x45, 0x6e, 0x74, 0x72, 0x79, 0x12, 0x10, 0x0a, 0x03, 0x6b, 0x65,
+	0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x03, 0x6b, 0x65, 0x79, 0x12, 0x14, 0x0a, 0x05,
+	0x76, 0x61, 0x6c, 0x75, 0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x05, 0x76, 0x61, 0x6c,
+	0x75, 0x65, 0x3a, 0x02, 0x38, 0x01, 0x2a, 0x26, 0x0a, 0x04, 0x54, 0x61, 0x73, 0x6b, 0x12, 0x0b,
 	0x0a, 0x07, 0x44, 0x45, 0x46, 0x41, 0x55, 0x4c, 0x54, 0x10, 0x00, 0x12, 0x11, 0x0a, 0x0d, 0x53,
 	0x54, 0x41, 0x54, 0x55, 0x53, 0x5f, 0x55, 0x50, 0x44, 0x41, 0x54, 0x45, 0x10, 0x01, 0x32, 0xdc,
 	0x0d, 0x0a, 0x09, 0x53, 0x6c, 0x61, 0x74, 0x6f, 0x6d, 0x61, 0x74, 0x65, 0x12, 0x87, 0x01, 0x0a,
@@ -1646,7 +1662,7 @@ func file_proto_slatomate_slatomate_proto_rawDescGZIP() []byte {
 }
 
 var file_proto_slatomate_slatomate_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_proto_slatomate_slatomate_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
+var file_proto_slatomate_slatomate_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_proto_slatomate_slatomate_proto_goTypes = []interface{}{
 	(Task)(0),                            // 0: github.itzmanish.service.slatomate.Task
 	(*Message)(nil),                      // 1: github.itzmanish.service.slatomate.Message
@@ -1672,8 +1688,9 @@ var file_proto_slatomate_slatomate_proto_goTypes = []interface{}{
 	(*GetAllJobResponse)(nil),            // 21: github.itzmanish.service.slatomate.GetAllJobResponse
 	(*Job)(nil),                          // 22: github.itzmanish.service.slatomate.Job
 	nil,                                  // 23: github.itzmanish.service.slatomate.CreateJobRequest.BodyEntry
-	(*timestamppb.Timestamp)(nil),        // 24: google.protobuf.Timestamp
-	(*emptypb.Empty)(nil),                // 25: google.protobuf.Empty
+	nil,                                  // 24: github.itzmanish.service.slatomate.Job.DataEntry
+	(*timestamppb.Timestamp)(nil),        // 25: google.protobuf.Timestamp
+	(*emptypb.Empty)(nil),                // 26: google.protobuf.Empty
 }
 var file_proto_slatomate_slatomate_proto_depIdxs = []int32{
 	8,  // 0: github.itzmanish.service.slatomate.GetAllOrganizationResponse.organizations:type_name -> github.itzmanish.service.slatomate.Organization
@@ -1682,42 +1699,43 @@ var file_proto_slatomate_slatomate_proto_depIdxs = []int32{
 	23, // 3: github.itzmanish.service.slatomate.CreateJobRequest.body:type_name -> github.itzmanish.service.slatomate.CreateJobRequest.BodyEntry
 	22, // 4: github.itzmanish.service.slatomate.GetAllJobResponse.jobs:type_name -> github.itzmanish.service.slatomate.Job
 	0,  // 5: github.itzmanish.service.slatomate.Job.task:type_name -> github.itzmanish.service.slatomate.Task
-	24, // 6: github.itzmanish.service.slatomate.Job.created_at:type_name -> google.protobuf.Timestamp
-	2,  // 7: github.itzmanish.service.slatomate.Slatomate.CreateOrganization:input_type -> github.itzmanish.service.slatomate.CreateOrganizationRequest
-	3,  // 8: github.itzmanish.service.slatomate.Slatomate.AuthorizeOrganization:input_type -> github.itzmanish.service.slatomate.AuthorizeOrganizationRequest
-	4,  // 9: github.itzmanish.service.slatomate.Slatomate.GetAllOrganization:input_type -> github.itzmanish.service.slatomate.GetAllOrganizationRequest
-	6,  // 10: github.itzmanish.service.slatomate.Slatomate.GetOrganization:input_type -> github.itzmanish.service.slatomate.GetOrganizationRequest
-	7,  // 11: github.itzmanish.service.slatomate.Slatomate.DeleteOrganization:input_type -> github.itzmanish.service.slatomate.DeleteOrganizationRequest
-	9,  // 12: github.itzmanish.service.slatomate.Slatomate.CreateUser:input_type -> github.itzmanish.service.slatomate.CreateUserRequest
-	10, // 13: github.itzmanish.service.slatomate.Slatomate.GetUser:input_type -> github.itzmanish.service.slatomate.GetUserRequest
-	11, // 14: github.itzmanish.service.slatomate.Slatomate.DeleteUser:input_type -> github.itzmanish.service.slatomate.DeleteUserRequest
-	13, // 15: github.itzmanish.service.slatomate.Slatomate.UpdateUser:input_type -> github.itzmanish.service.slatomate.UpdateUserRequest
-	14, // 16: github.itzmanish.service.slatomate.Slatomate.GenerateAPIKey:input_type -> github.itzmanish.service.slatomate.GenerateAPIKeyRequest
-	25, // 17: github.itzmanish.service.slatomate.Slatomate.GetAllUser:input_type -> google.protobuf.Empty
-	17, // 18: github.itzmanish.service.slatomate.Slatomate.CreateJob:input_type -> github.itzmanish.service.slatomate.CreateJobRequest
-	18, // 19: github.itzmanish.service.slatomate.Slatomate.GetJob:input_type -> github.itzmanish.service.slatomate.GetJobRequest
-	20, // 20: github.itzmanish.service.slatomate.Slatomate.DeleteJob:input_type -> github.itzmanish.service.slatomate.DeleteJobRequest
-	19, // 21: github.itzmanish.service.slatomate.Slatomate.GetAllJob:input_type -> github.itzmanish.service.slatomate.GetAllJobRequset
-	8,  // 22: github.itzmanish.service.slatomate.Slatomate.CreateOrganization:output_type -> github.itzmanish.service.slatomate.Organization
-	25, // 23: github.itzmanish.service.slatomate.Slatomate.AuthorizeOrganization:output_type -> google.protobuf.Empty
-	5,  // 24: github.itzmanish.service.slatomate.Slatomate.GetAllOrganization:output_type -> github.itzmanish.service.slatomate.GetAllOrganizationResponse
-	8,  // 25: github.itzmanish.service.slatomate.Slatomate.GetOrganization:output_type -> github.itzmanish.service.slatomate.Organization
-	25, // 26: github.itzmanish.service.slatomate.Slatomate.DeleteOrganization:output_type -> google.protobuf.Empty
-	16, // 27: github.itzmanish.service.slatomate.Slatomate.CreateUser:output_type -> github.itzmanish.service.slatomate.User
-	16, // 28: github.itzmanish.service.slatomate.Slatomate.GetUser:output_type -> github.itzmanish.service.slatomate.User
-	25, // 29: github.itzmanish.service.slatomate.Slatomate.DeleteUser:output_type -> google.protobuf.Empty
-	16, // 30: github.itzmanish.service.slatomate.Slatomate.UpdateUser:output_type -> github.itzmanish.service.slatomate.User
-	15, // 31: github.itzmanish.service.slatomate.Slatomate.GenerateAPIKey:output_type -> github.itzmanish.service.slatomate.GenerateAPIKeyResponse
-	12, // 32: github.itzmanish.service.slatomate.Slatomate.GetAllUser:output_type -> github.itzmanish.service.slatomate.GetAllUserResponse
-	22, // 33: github.itzmanish.service.slatomate.Slatomate.CreateJob:output_type -> github.itzmanish.service.slatomate.Job
-	22, // 34: github.itzmanish.service.slatomate.Slatomate.GetJob:output_type -> github.itzmanish.service.slatomate.Job
-	25, // 35: github.itzmanish.service.slatomate.Slatomate.DeleteJob:output_type -> google.protobuf.Empty
-	21, // 36: github.itzmanish.service.slatomate.Slatomate.GetAllJob:output_type -> github.itzmanish.service.slatomate.GetAllJobResponse
-	22, // [22:37] is the sub-list for method output_type
-	7,  // [7:22] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	24, // 6: github.itzmanish.service.slatomate.Job.data:type_name -> github.itzmanish.service.slatomate.Job.DataEntry
+	25, // 7: github.itzmanish.service.slatomate.Job.created_at:type_name -> google.protobuf.Timestamp
+	2,  // 8: github.itzmanish.service.slatomate.Slatomate.CreateOrganization:input_type -> github.itzmanish.service.slatomate.CreateOrganizationRequest
+	3,  // 9: github.itzmanish.service.slatomate.Slatomate.AuthorizeOrganization:input_type -> github.itzmanish.service.slatomate.AuthorizeOrganizationRequest
+	4,  // 10: github.itzmanish.service.slatomate.Slatomate.GetAllOrganization:input_type -> github.itzmanish.service.slatomate.GetAllOrganizationRequest
+	6,  // 11: github.itzmanish.service.slatomate.Slatomate.GetOrganization:input_type -> github.itzmanish.service.slatomate.GetOrganizationRequest
+	7,  // 12: github.itzmanish.service.slatomate.Slatomate.DeleteOrganization:input_type -> github.itzmanish.service.slatomate.DeleteOrganizationRequest
+	9,  // 13: github.itzmanish.service.slatomate.Slatomate.CreateUser:input_type -> github.itzmanish.service.slatomate.CreateUserRequest
+	10, // 14: github.itzmanish.service.slatomate.Slatomate.GetUser:input_type -> github.itzmanish.service.slatomate.GetUserRequest
+	11, // 15: github.itzmanish.service.slatomate.Slatomate.DeleteUser:input_type -> github.itzmanish.service.slatomate.DeleteUserRequest
+	13, // 16: github.itzmanish.service.slatomate.Slatomate.UpdateUser:input_type -> github.itzmanish.service.slatomate.UpdateUserRequest
+	14, // 17: github.itzmanish.service.slatomate.Slatomate.GenerateAPIKey:input_type -> github.itzmanish.service.slatomate.GenerateAPIKeyRequest
+	26, // 18: github.itzmanish.service.slatomate.Slatomate.GetAllUser:input_type -> google.protobuf.Empty
+	17, // 19: github.itzmanish.service.slatomate.Slatomate.CreateJob:input_type -> github.itzmanish.service.slatomate.CreateJobRequest
+	18, // 20: github.itzmanish.service.slatomate.Slatomate.GetJob:input_type -> github.itzmanish.service.slatomate.GetJobRequest
+	20, // 21: github.itzmanish.service.slatomate.Slatomate.DeleteJob:input_type -> github.itzmanish.service.slatomate.DeleteJobRequest
+	19, // 22: github.itzmanish.service.slatomate.Slatomate.GetAllJob:input_type -> github.itzmanish.service.slatomate.GetAllJobRequset
+	8,  // 23: github.itzmanish.service.slatomate.Slatomate.CreateOrganization:output_type -> github.itzmanish.service.slatomate.Organization
+	26, // 24: github.itzmanish.service.slatomate.Slatomate.AuthorizeOrganization:output_type -> google.protobuf.Empty
+	5,  // 25: github.itzmanish.service.slatomate.Slatomate.GetAllOrganization:output_type -> github.itzmanish.service.slatomate.GetAllOrganizationResponse
+	8,  // 26: github.itzmanish.service.slatomate.Slatomate.GetOrganization:output_type -> github.itzmanish.service.slatomate.Organization
+	26, // 27: github.itzmanish.service.slatomate.Slatomate.DeleteOrganization:output_type -> google.protobuf.Empty
+	16, // 28: github.itzmanish.service.slatomate.Slatomate.CreateUser:output_type -> github.itzmanish.service.slatomate.User
+	16, // 29: github.itzmanish.service.slatomate.Slatomate.GetUser:output_type -> github.itzmanish.service.slatomate.User
+	26, // 30: github.itzmanish.service.slatomate.Slatomate.DeleteUser:output_type -> google.protobuf.Empty
+	16, // 31: github.itzmanish.service.slatomate.Slatomate.UpdateUser:output_type -> github.itzmanish.service.slatomate.User
+	15, // 32: github.itzmanish.service.slatomate.Slatomate.GenerateAPIKey:output_type -> github.itzmanish.service.slatomate.GenerateAPIKeyResponse
+	12, // 33: github.itzmanish.service.slatomate.Slatomate.GetAllUser:output_type -> github.itzmanish.service.slatomate.GetAllUserResponse
+	22, // 34: github.itzmanish.service.slatomate.Slatomate.CreateJob:output_type -> github.itzmanish.service.slatomate.Job
+	22, // 35: github.itzmanish.service.slatomate.Slatomate.GetJob:output_type -> github.itzmanish.service.slatomate.Job
+	26, // 36: github.itzmanish.service.slatomate.Slatomate.DeleteJob:output_type -> google.protobuf.Empty
+	21, // 37: github.itzmanish.service.slatomate.Slatomate.GetAllJob:output_type -> github.itzmanish.service.slatomate.GetAllJobResponse
+	23, // [23:38] is the sub-list for method output_type
+	8,  // [8:23] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_proto_slatomate_slatomate_proto_init() }
@@ -1997,7 +2015,7 @@ func file_proto_slatomate_slatomate_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_proto_slatomate_slatomate_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   23,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
