@@ -6,10 +6,10 @@ option go_package="proto/slatomate";
 import "google/protobuf/empty.proto";
 
 service Slatomate {
-	rpc CreateProject (CreateProjectRequest) returns (Project) {};
-	rpc GetAllProjct (GetAllProjectRequest) returns (GetAllProjectResponse) {};
-	rpc GetProject (GetProjectRequest) returns (Project) {};
-	rpc DeleteProject (DeleteProjectRequest) returns (google.protobuf.Empty) {};
+	rpc CreateOrganization (CreateOrganizationRequest) returns (Organization) {};
+	rpc GetAllOrganization (GetAllOrganizationRequest) returns (GetAllOrganizationResponse) {};
+	rpc GetOrganization (GetOrganizationRequest) returns (Organization) {};
+	rpc DeleteOrganization (DeleteOrganizationRequest) returns (google.protobuf.Empty) {};
 
 	rpc CreateUser (CreateUserRequest) returns (User) {};
 	rpc GetUser (GetUserRequest) returns (User) {};
@@ -26,36 +26,40 @@ message Message {
 }
 
 
-// =========== Project message definition ====================
+// =========== Organization message definition ====================
 
-message CreateProjectRequest {
+message CreateOrganizationRequest {
 	string name = 1;
 	string slack_apikey = 2;
+	string user_id = 3;
 }
 
 
-message GetAllProjectRequest{
+message GetAllOrganizationRequest{
 	string user_id = 1;
 }
 
-message GetAllProjectResponse{
-	repeated Project projects = 1;
+message GetAllOrganizationResponse{
+	repeated Organization organizations = 1;
 	int32 count = 2;
 }
 
-message GetProjectRequest{
+message GetOrganizationRequest{
 	string id = 1;
+	string user_id = 2;
 }
 
-message DeleteProjectRequest{
+message DeleteOrganizationRequest{
 	string id = 1;
+	string user_id = 2;
 }
 
-message Project {
+message Organization {
 	string id = 1;
 	string name = 2;
 	string slack_apikey = 3;
-	string created_at = 4;
+	string user = 4;
+	string created_at = 5;
 }
 
 // ================ User message definition =======================

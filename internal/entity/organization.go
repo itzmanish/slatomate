@@ -1,0 +1,50 @@
+package entity
+
+import (
+	"time"
+
+	"github.com/google/uuid"
+	"github.com/itzmanish/slatomate/proto/slatomate"
+	"gorm.io/gorm"
+)
+
+// Organization represent an organization
+type Organization struct {
+	ID          uuid.UUID
+	Name        string
+	SlackAPIKey string
+	UserID      uuid.UUID
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+}
+
+// BeforeCreate will set a UUID rather than numeric ID.
+func (org *Organization) BeforeCreate(tx *gorm.DB) error {
+	u := uuid.New()
+	org.ID = u
+	return nil
+}
+
+//SerializeOrganization converts proto Organization to Organization struct
+func SerializeOrganization(in *slatomate.Organization) Organization {
+	if in == nil {
+		return Organization{}
+	}
+	Organization := Organization{
+		Name:        in.Name,
+		SlackAPIKey: in.SlackApikey,
+	}
+
+	return Organization
+}
+
+//DeserializeOrganization converts Organization to proto Organization
+func DeserializeOrganization(in *Organization) slatomate.Organization {
+	return slatomate.Organization{
+		Id:          in.ID.String(),
+		Name:        in.Name,
+		SlackApikey: in.SlackAPIKey,
+		User:        in.UserID.String(),
+		CreatedAt:   in.CreatedAt.Format(time.RFC3339),
+	}
+}

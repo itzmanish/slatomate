@@ -9,10 +9,10 @@ import (
 )
 
 type SlatomateHandler interface {
-	CreateProject(context.Context, *slatomatepb.CreateProjectRequest, *slatomatepb.Project) error
-	GetAllProjct(context.Context, *slatomatepb.GetAllProjectRequest, *slatomatepb.GetAllProjectResponse) error
-	GetProject(context.Context, *slatomatepb.GetProjectRequest, *slatomatepb.Project) error
-	DeleteProject(context.Context, *slatomatepb.DeleteProjectRequest, *emptypb.Empty) error
+	CreateOrganization(context.Context, *slatomatepb.CreateOrganizationRequest, *slatomatepb.Organization) error
+	GetAllOrganization(context.Context, *slatomatepb.GetAllOrganizationRequest, *slatomatepb.GetAllOrganizationResponse) error
+	GetOrganization(context.Context, *slatomatepb.GetOrganizationRequest, *slatomatepb.Organization) error
+	DeleteOrganization(context.Context, *slatomatepb.DeleteOrganizationRequest, *emptypb.Empty) error
 	CreateUser(context.Context, *slatomatepb.CreateUserRequest, *slatomatepb.User) error
 	GetUser(context.Context, *slatomatepb.GetUserRequest, *slatomatepb.User) error
 	DeleteUser(context.Context, *slatomatepb.DeleteUserRequest, *emptypb.Empty) error
@@ -23,10 +23,10 @@ type SlatomateHandler interface {
 }
 
 type slatomateHandler struct {
-	userRepo    repository.UserRepository
-	projectRepo repository.ProjectRepository
+	userRepo repository.UserRepository
+	orgRepo  repository.OrganizationRepository
 }
 
-func NewHandler(userRepo repository.UserRepository, projectRepo repository.ProjectRepository) SlatomateHandler {
-	return &slatomateHandler{userRepo, projectRepo}
+func NewHandler(userRepo repository.UserRepository, orgRepo repository.OrganizationRepository) SlatomateHandler {
+	return &slatomateHandler{userRepo, orgRepo}
 }

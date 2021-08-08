@@ -43,10 +43,10 @@ func NewSlatomateEndpoints() []*api.Endpoint {
 // Client API for Slatomate service
 
 type SlatomateService interface {
-	CreateProject(ctx context.Context, in *CreateProjectRequest, opts ...client.CallOption) (*Project, error)
-	GetAllProjct(ctx context.Context, in *GetAllProjectRequest, opts ...client.CallOption) (*GetAllProjectResponse, error)
-	GetProject(ctx context.Context, in *GetProjectRequest, opts ...client.CallOption) (*Project, error)
-	DeleteProject(ctx context.Context, in *DeleteProjectRequest, opts ...client.CallOption) (*emptypb.Empty, error)
+	CreateOrganization(ctx context.Context, in *CreateOrganizationRequest, opts ...client.CallOption) (*Organization, error)
+	GetAllOrganization(ctx context.Context, in *GetAllOrganizationRequest, opts ...client.CallOption) (*GetAllOrganizationResponse, error)
+	GetOrganization(ctx context.Context, in *GetOrganizationRequest, opts ...client.CallOption) (*Organization, error)
+	DeleteOrganization(ctx context.Context, in *DeleteOrganizationRequest, opts ...client.CallOption) (*emptypb.Empty, error)
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...client.CallOption) (*User, error)
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...client.CallOption) (*User, error)
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...client.CallOption) (*emptypb.Empty, error)
@@ -69,9 +69,9 @@ func NewSlatomateService(name string, c client.Client) SlatomateService {
 	}
 }
 
-func (c *slatomateService) CreateProject(ctx context.Context, in *CreateProjectRequest, opts ...client.CallOption) (*Project, error) {
-	req := c.c.NewRequest(c.name, "Slatomate.CreateProject", in)
-	out := new(Project)
+func (c *slatomateService) CreateOrganization(ctx context.Context, in *CreateOrganizationRequest, opts ...client.CallOption) (*Organization, error) {
+	req := c.c.NewRequest(c.name, "Slatomate.CreateOrganization", in)
+	out := new(Organization)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -79,9 +79,9 @@ func (c *slatomateService) CreateProject(ctx context.Context, in *CreateProjectR
 	return out, nil
 }
 
-func (c *slatomateService) GetAllProjct(ctx context.Context, in *GetAllProjectRequest, opts ...client.CallOption) (*GetAllProjectResponse, error) {
-	req := c.c.NewRequest(c.name, "Slatomate.GetAllProjct", in)
-	out := new(GetAllProjectResponse)
+func (c *slatomateService) GetAllOrganization(ctx context.Context, in *GetAllOrganizationRequest, opts ...client.CallOption) (*GetAllOrganizationResponse, error) {
+	req := c.c.NewRequest(c.name, "Slatomate.GetAllOrganization", in)
+	out := new(GetAllOrganizationResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -89,9 +89,9 @@ func (c *slatomateService) GetAllProjct(ctx context.Context, in *GetAllProjectRe
 	return out, nil
 }
 
-func (c *slatomateService) GetProject(ctx context.Context, in *GetProjectRequest, opts ...client.CallOption) (*Project, error) {
-	req := c.c.NewRequest(c.name, "Slatomate.GetProject", in)
-	out := new(Project)
+func (c *slatomateService) GetOrganization(ctx context.Context, in *GetOrganizationRequest, opts ...client.CallOption) (*Organization, error) {
+	req := c.c.NewRequest(c.name, "Slatomate.GetOrganization", in)
+	out := new(Organization)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -99,8 +99,8 @@ func (c *slatomateService) GetProject(ctx context.Context, in *GetProjectRequest
 	return out, nil
 }
 
-func (c *slatomateService) DeleteProject(ctx context.Context, in *DeleteProjectRequest, opts ...client.CallOption) (*emptypb.Empty, error) {
-	req := c.c.NewRequest(c.name, "Slatomate.DeleteProject", in)
+func (c *slatomateService) DeleteOrganization(ctx context.Context, in *DeleteOrganizationRequest, opts ...client.CallOption) (*emptypb.Empty, error) {
+	req := c.c.NewRequest(c.name, "Slatomate.DeleteOrganization", in)
 	out := new(emptypb.Empty)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -172,10 +172,10 @@ func (c *slatomateService) GetAllUser(ctx context.Context, in *emptypb.Empty, op
 // Server API for Slatomate service
 
 type SlatomateHandler interface {
-	CreateProject(context.Context, *CreateProjectRequest, *Project) error
-	GetAllProjct(context.Context, *GetAllProjectRequest, *GetAllProjectResponse) error
-	GetProject(context.Context, *GetProjectRequest, *Project) error
-	DeleteProject(context.Context, *DeleteProjectRequest, *emptypb.Empty) error
+	CreateOrganization(context.Context, *CreateOrganizationRequest, *Organization) error
+	GetAllOrganization(context.Context, *GetAllOrganizationRequest, *GetAllOrganizationResponse) error
+	GetOrganization(context.Context, *GetOrganizationRequest, *Organization) error
+	DeleteOrganization(context.Context, *DeleteOrganizationRequest, *emptypb.Empty) error
 	CreateUser(context.Context, *CreateUserRequest, *User) error
 	GetUser(context.Context, *GetUserRequest, *User) error
 	DeleteUser(context.Context, *DeleteUserRequest, *emptypb.Empty) error
@@ -188,10 +188,10 @@ type SlatomateHandler interface {
 
 func RegisterSlatomateHandler(s server.Server, hdlr SlatomateHandler, opts ...server.HandlerOption) error {
 	type slatomate interface {
-		CreateProject(ctx context.Context, in *CreateProjectRequest, out *Project) error
-		GetAllProjct(ctx context.Context, in *GetAllProjectRequest, out *GetAllProjectResponse) error
-		GetProject(ctx context.Context, in *GetProjectRequest, out *Project) error
-		DeleteProject(ctx context.Context, in *DeleteProjectRequest, out *emptypb.Empty) error
+		CreateOrganization(ctx context.Context, in *CreateOrganizationRequest, out *Organization) error
+		GetAllOrganization(ctx context.Context, in *GetAllOrganizationRequest, out *GetAllOrganizationResponse) error
+		GetOrganization(ctx context.Context, in *GetOrganizationRequest, out *Organization) error
+		DeleteOrganization(ctx context.Context, in *DeleteOrganizationRequest, out *emptypb.Empty) error
 		CreateUser(ctx context.Context, in *CreateUserRequest, out *User) error
 		GetUser(ctx context.Context, in *GetUserRequest, out *User) error
 		DeleteUser(ctx context.Context, in *DeleteUserRequest, out *emptypb.Empty) error
@@ -210,20 +210,20 @@ type slatomateHandler struct {
 	SlatomateHandler
 }
 
-func (h *slatomateHandler) CreateProject(ctx context.Context, in *CreateProjectRequest, out *Project) error {
-	return h.SlatomateHandler.CreateProject(ctx, in, out)
+func (h *slatomateHandler) CreateOrganization(ctx context.Context, in *CreateOrganizationRequest, out *Organization) error {
+	return h.SlatomateHandler.CreateOrganization(ctx, in, out)
 }
 
-func (h *slatomateHandler) GetAllProjct(ctx context.Context, in *GetAllProjectRequest, out *GetAllProjectResponse) error {
-	return h.SlatomateHandler.GetAllProjct(ctx, in, out)
+func (h *slatomateHandler) GetAllOrganization(ctx context.Context, in *GetAllOrganizationRequest, out *GetAllOrganizationResponse) error {
+	return h.SlatomateHandler.GetAllOrganization(ctx, in, out)
 }
 
-func (h *slatomateHandler) GetProject(ctx context.Context, in *GetProjectRequest, out *Project) error {
-	return h.SlatomateHandler.GetProject(ctx, in, out)
+func (h *slatomateHandler) GetOrganization(ctx context.Context, in *GetOrganizationRequest, out *Organization) error {
+	return h.SlatomateHandler.GetOrganization(ctx, in, out)
 }
 
-func (h *slatomateHandler) DeleteProject(ctx context.Context, in *DeleteProjectRequest, out *emptypb.Empty) error {
-	return h.SlatomateHandler.DeleteProject(ctx, in, out)
+func (h *slatomateHandler) DeleteOrganization(ctx context.Context, in *DeleteOrganizationRequest, out *emptypb.Empty) error {
+	return h.SlatomateHandler.DeleteOrganization(ctx, in, out)
 }
 
 func (h *slatomateHandler) CreateUser(ctx context.Context, in *CreateUserRequest, out *User) error {
