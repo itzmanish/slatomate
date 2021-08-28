@@ -8,7 +8,7 @@ import (
 )
 
 type JobRepository interface {
-	CreateJob(*entity.Job) (*entity.Job, error)
+	CreateJob(uuid.UUID, *entity.Job) error
 	GetJob(*entity.Job) (*entity.Job, error)
 	GetAllJob(uuid.UUID) ([]*entity.Job, error)
 	DeleteJob(*entity.Job) error
@@ -22,9 +22,8 @@ func NewJobRepository(db *gorm.DB) JobRepository {
 	return &jobDB{db}
 }
 
-func (p *jobDB) CreateJob(job *entity.Job) (*entity.Job, error) {
-	res := p.db.Create(job)
-	return job, utils.TranslateErrors(res)
+func (p *jobDB) CreateJob(orgID uuid.UUID, job *entity.Job) error {
+	return p.db.Model(&entity.Organization{ID: orgID}).Association("Jobs").Append(job)
 }
 
 func (p *jobDB) GetJob(query *entity.Job) (*entity.Job, error) {

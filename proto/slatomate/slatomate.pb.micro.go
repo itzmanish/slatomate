@@ -58,7 +58,7 @@ type SlatomateService interface {
 	// Admin only
 	GetAllUser(ctx context.Context, in *emptypb.Empty, opts ...client.CallOption) (*GetAllUserResponse, error)
 	// Jobs
-	CreateJob(ctx context.Context, in *CreateJobRequest, opts ...client.CallOption) (*Job, error)
+	CreateJob(ctx context.Context, in *Job, opts ...client.CallOption) (*Job, error)
 	GetJob(ctx context.Context, in *GetJobRequest, opts ...client.CallOption) (*Job, error)
 	DeleteJob(ctx context.Context, in *DeleteJobRequest, opts ...client.CallOption) (*emptypb.Empty, error)
 	GetAllJob(ctx context.Context, in *GetAllJobRequset, opts ...client.CallOption) (*GetAllJobResponse, error)
@@ -186,7 +186,7 @@ func (c *slatomateService) GetAllUser(ctx context.Context, in *emptypb.Empty, op
 	return out, nil
 }
 
-func (c *slatomateService) CreateJob(ctx context.Context, in *CreateJobRequest, opts ...client.CallOption) (*Job, error) {
+func (c *slatomateService) CreateJob(ctx context.Context, in *Job, opts ...client.CallOption) (*Job, error) {
 	req := c.c.NewRequest(c.name, "Slatomate.CreateJob", in)
 	out := new(Job)
 	err := c.c.Call(ctx, req, out, opts...)
@@ -243,7 +243,7 @@ type SlatomateHandler interface {
 	// Admin only
 	GetAllUser(context.Context, *emptypb.Empty, *GetAllUserResponse) error
 	// Jobs
-	CreateJob(context.Context, *CreateJobRequest, *Job) error
+	CreateJob(context.Context, *Job, *Job) error
 	GetJob(context.Context, *GetJobRequest, *Job) error
 	DeleteJob(context.Context, *DeleteJobRequest, *emptypb.Empty) error
 	GetAllJob(context.Context, *GetAllJobRequset, *GetAllJobResponse) error
@@ -262,7 +262,7 @@ func RegisterSlatomateHandler(s server.Server, hdlr SlatomateHandler, opts ...se
 		UpdateUser(ctx context.Context, in *UpdateUserRequest, out *User) error
 		GenerateAPIKey(ctx context.Context, in *GenerateAPIKeyRequest, out *GenerateAPIKeyResponse) error
 		GetAllUser(ctx context.Context, in *emptypb.Empty, out *GetAllUserResponse) error
-		CreateJob(ctx context.Context, in *CreateJobRequest, out *Job) error
+		CreateJob(ctx context.Context, in *Job, out *Job) error
 		GetJob(ctx context.Context, in *GetJobRequest, out *Job) error
 		DeleteJob(ctx context.Context, in *DeleteJobRequest, out *emptypb.Empty) error
 		GetAllJob(ctx context.Context, in *GetAllJobRequset, out *GetAllJobResponse) error
@@ -322,7 +322,7 @@ func (h *slatomateHandler) GetAllUser(ctx context.Context, in *emptypb.Empty, ou
 	return h.SlatomateHandler.GetAllUser(ctx, in, out)
 }
 
-func (h *slatomateHandler) CreateJob(ctx context.Context, in *CreateJobRequest, out *Job) error {
+func (h *slatomateHandler) CreateJob(ctx context.Context, in *Job, out *Job) error {
 	return h.SlatomateHandler.CreateJob(ctx, in, out)
 }
 

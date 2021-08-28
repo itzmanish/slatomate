@@ -10,20 +10,25 @@ import (
 )
 
 type Status int
+type Task int
 
 const (
 	ActiveStatus Status = iota
 	InActive
 )
+const (
+	NoOp Task = iota
+	StatusUpdate
+)
 
 // Job represent a Job
 type Job struct {
-	ID             uuid.UUID `json:"uuid" gorm:"primary_key; unique; type:uuid;"`
-	Name           string    `json:"name" gorm:"type:varchar(100)"`
-	ScheduleAt     string    `json:"schedule_at" gorm:"type:varchar(100)"`
-	Task           string    `json:"task" gorm:"type:varchar(100)"`
-	Status         Status    `json:"status"`
-	Data           map[string]string
+	ID             uuid.UUID         `json:"id" gorm:"primary_key; unique; type:uuid;"`
+	Name           string            `json:"name" gorm:"type:varchar(100)"`
+	ScheduleAt     string            `json:"schedule_at" gorm:"type:varchar(100)"`
+	Task           Task              `json:"task" gorm:"type:int"`
+	Status         Status            `json:"status"`
+	Data           map[string]string `json:"data" gorm:"type:jsonb"`
 	OrganizationID uuid.UUID
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
@@ -37,18 +42,18 @@ func (job *Job) BeforeCreate(tx *gorm.DB) error {
 }
 
 //SerializeJob converts proto Job to Job struct
-func SerializeJob(in *slatomate.Job) Job {
+func SerializeJob(in *slatomate.Job) *Job {
 	if in == nil {
-		return Job{}
+		return &Job{}
 	}
 	job := Job{
 		Name:       in.Name,
 		ScheduleAt: in.ScheduleAt,
-		Task:       in.Task.String(),
+		Task:       GetTaskFromProtoTask(in.Task),
 		Data:       in.Data,
 	}
 
-	return job
+	return &job
 }
 
 //DeserializeJob converts Job to proto Job
@@ -65,12 +70,23 @@ func DeserializeJob(in *Job) slatomate.Job {
 	}
 }
 
-func GetTask(task string) slatomate.Task {
+func GetTask(task Task) slatomate.Task {
 	switch task {
-	case "status_update":
+	case StatusUpdate:
 		return slatomate.Task_STATUS_UPDATE
 	default:
 		return slatomate.Task_DEFAULT
+	}
+}
+
+func GetTaskFromProtoTask(task slatomate.Task) Task {
+	switch task {
+	case slatomate.Task_STATUS_UPDATE:
+		return StatusUpdate
+	case slatomate.Task_DEFAULT:
+		return NoOp
+	default:
+		return NoOp
 	}
 }
 

@@ -23,7 +23,7 @@ service Slatomate {
 	rpc GetAllUser (google.protobuf.Empty) returns (GetAllUserResponse) {};
 
 	// Jobs
-	rpc CreateJob (CreateJobRequest) returns (Job){};
+	rpc CreateJob (Job) returns (Job){};
 	rpc GetJob (GetJobRequest) returns (Job){};
 	rpc DeleteJob (DeleteJobRequest) returns (google.protobuf.Empty){};
 	rpc GetAllJob (GetAllJobRequset) returns (GetAllJobResponse){};
@@ -121,13 +121,6 @@ message User {
 
 // ====================== Job ====================
 
-message CreateJobRequest{
-	string name = 1;
-	string schedule_at = 2;
-	string org_id = 3;
-	Task task = 4;
-	map<string,string> body = 5;
-}
 
 message GetJobRequest{
 	string id = 1;

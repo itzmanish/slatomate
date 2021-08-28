@@ -25,6 +25,6 @@ func New() (*gorm.DB, error) {
 	if err != nil {
 		return nil, err
 	}
-	db.AutoMigrate(&entity.User{}, &entity.Organization{})
+	db.AutoMigrate(&entity.User{}, &entity.Organization{}, &entity.Job{})
 	return db, nil
 }

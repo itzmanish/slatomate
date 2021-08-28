@@ -14,12 +14,12 @@ import (
 
 // User represent a user object
 type User struct {
-	ID            uuid.UUID `json:"uuid" gorm:"primary_key; unique; type:uuid;"`
-	Name          string    `json:"name" gorm:"type:varchar(100)"`
-	Email         string    `json:"email" gorm:"type:varchar(100)"`
-	Password      string    `json:"password" gorm:"type:varchar(200)"`
-	APIKey        string    `json:"api_key"`
-	Organizations []*Organization
+	ID            uuid.UUID      `json:"id" gorm:"primary_key; unique; type:uuid;"`
+	Name          string         `json:"name" gorm:"type:varchar(100)"`
+	Email         string         `json:"email" gorm:"type:varchar(100)"`
+	Password      string         `json:"password" gorm:"type:varchar(200)"`
+	APIKey        string         `json:"api_key"`
+	Organizations []Organization `gorm:"foreignKey:UserID"`
 	CreatedAt     time.Time
 	UpdatedAt     time.Time
 }
