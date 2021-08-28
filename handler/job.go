@@ -30,7 +30,7 @@ func (h *slatomateHandler) CreateJob(ctx context.Context, in *slatomatepb.Job, o
 	if err != nil {
 		return err
 	}
-	err = h.publisher.Publish(context.TODO(), &slatomatepb.Message{Header: map[string]string{"type": "JOB"}, Body: data})
+	err = h.publisher.Publish(context.TODO(), &slatomatepb.Message{Header: map[string]string{"type": "JOB_CREATED"}, Body: data})
 	if err != nil {
 		return err
 	}
@@ -73,7 +73,12 @@ func (h *slatomateHandler) DeleteJob(ctx context.Context, in *slatomatepb.Delete
 	if err != nil {
 		return errors.BadRequest("DELETE_JOB_HANDLER", "Job id is invalid!")
 	}
-	return h.jobRepo.DeleteJob(&entity.Job{ID: jid, OrganizationID: oid})
+	err = h.jobRepo.DeleteJob(&entity.Job{ID: jid, OrganizationID: oid})
+	if err != nil {
+		return err
+	}
+	return h.publisher.Publish(context.TODO(), &slatomatepb.Message{Header: map[string]string{"type": "JOB_DELETED"}, Body: []byte(jid.String())})
+
 }
 
 func (h *slatomateHandler) GetAllJob(ctx context.Context, in *slatomatepb.GetAllJobRequset, out *slatomatepb.GetAllJobResponse) error {
