@@ -43,10 +43,10 @@ func main() {
 	slatomate.RegisterSlatomateHandler(service.Server(),
 		handler.NewHandler(repository.NewUserRepository(pdb),
 			repository.NewOrganizationRepository(pdb),
-			repository.NewJobRepository(pdb)))
+			repository.NewJobRepository(pdb), micro.NewEvent(SERVICE_NAME, service.Client())))
 
 	// Register Struct as Subscriber
-	micro.RegisterSubscriber("github.itzmanish.service.slatomate", service.Server(), new(subscriber.Slatomate))
+	micro.RegisterSubscriber(SERVICE_NAME, service.Server(), subscriber.NewSubscriber(repository.NewOrganizationRepository(pdb)))
 
 	// Run service
 	if err := service.Run(); err != nil {

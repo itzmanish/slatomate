@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 
+	"github.com/itzmanish/go-micro/v2"
 	"github.com/itzmanish/slatomate/internal/repository"
 	"github.com/itzmanish/slatomate/internal/worker"
 	slatomatepb "github.com/itzmanish/slatomate/proto/slatomate"
@@ -30,12 +31,13 @@ type SlatomateHandler interface {
 }
 
 type slatomateHandler struct {
-	userRepo repository.UserRepository
-	orgRepo  repository.OrganizationRepository
-	jobRepo  repository.JobRepository
-	worker   *worker.Worker
+	userRepo  repository.UserRepository
+	orgRepo   repository.OrganizationRepository
+	jobRepo   repository.JobRepository
+	worker    *worker.Worker
+	publisher micro.Event
 }
 
-func NewHandler(userRepo repository.UserRepository, orgRepo repository.OrganizationRepository, jobRepo repository.JobRepository) SlatomateHandler {
-	return &slatomateHandler{userRepo, orgRepo, jobRepo, worker.NewWorker()}
+func NewHandler(userRepo repository.UserRepository, orgRepo repository.OrganizationRepository, jobRepo repository.JobRepository, event micro.Event) SlatomateHandler {
+	return &slatomateHandler{userRepo, orgRepo, jobRepo, worker.NewWorker(), event}
 }

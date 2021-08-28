@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/google/uuid"
 	"github.com/itzmanish/go-micro/v2/errors"
@@ -22,6 +23,14 @@ func (h *slatomateHandler) CreateJob(ctx context.Context, in *slatomatepb.Job, o
 		return err
 	}
 	err = h.jobRepo.CreateJob(orgID, serialized)
+	if err != nil {
+		return err
+	}
+	data, err := json.Marshal(serialized)
+	if err != nil {
+		return err
+	}
+	err = h.publisher.Publish(context.TODO(), &slatomatepb.Message{Header: map[string]string{"type": "JOB"}, Body: data})
 	if err != nil {
 		return err
 	}
@@ -87,5 +96,6 @@ func (h *slatomateHandler) GetAllJob(ctx context.Context, in *slatomatepb.GetAll
 		djob := entity.DeserializeJob(v)
 		out.Jobs[i] = &djob
 	}
+
 	return nil
 }

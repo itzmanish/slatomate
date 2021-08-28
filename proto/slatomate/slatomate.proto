@@ -30,7 +30,8 @@ service Slatomate {
 }
 
 message Message {
-	string say = 1;
+	map<string,string> header = 1;
+	bytes body = 2;
 }
 
 
