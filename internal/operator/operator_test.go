@@ -1,6 +1,7 @@
 package operator
 
 import (
+	"os"
 	"testing"
 
 	"github.com/google/uuid"
@@ -9,7 +10,7 @@ import (
 )
 
 func TestProcessTask(t *testing.T) {
-	token := "xoxp-1001856848789-2040990405655-2381966723552-c657a0c560681078666336217006abd2"
+	token := os.Getenv("SLACK_API_TOKEN")
 	job := &entity.Job{
 		ID:   uuid.New(),
 		Name: "Test status update",
