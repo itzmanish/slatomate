@@ -22,11 +22,12 @@ func (h *slatomateHandler) CreateOrganization(ctx context.Context, in *slatomate
 	if err != nil {
 		return errors.BadRequest("CREATE_ORG_HANDLER", "user id is wrong.")
 	}
-	cp, err := h.orgRepo.CreateOrganization(&entity.Organization{Name: in.GetName(), UserID: uid})
+	orgin := &entity.Organization{Name: in.GetName()}
+	err = h.orgRepo.CreateOrganization(uid, orgin)
 	if err != nil {
 		return err
 	}
-	*out = entity.DeserializeOrganization(cp)
+	*out = entity.DeserializeOrganization(orgin)
 	return nil
 }
 
