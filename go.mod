@@ -12,6 +12,7 @@ require (
 	github.com/google/uuid v1.2.0
 	github.com/itzmanish/go-micro/v2 v2.10.0
 	github.com/joho/godotenv v1.3.0
+	github.com/mitchellh/mapstructure v1.4.1 // indirect
 	github.com/robfig/cron/v3 v3.0.0 // indirect
 	github.com/slack-go/slack v0.9.4
 	github.com/stretchr/testify v1.7.0
