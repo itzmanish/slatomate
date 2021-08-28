@@ -29,7 +29,7 @@ func (u *userDB) CreateUser(user *entity.User) (*entity.User, error) {
 
 func (u *userDB) GetUser(query *entity.User) (*entity.User, error) {
 	var user entity.User
-	req := u.db.Where(query).First(&user)
+	req := u.db.Preload("Organizations").Where(query).First(&user)
 	return &user, utils.TranslateErrors(req)
 }
 
@@ -49,6 +49,6 @@ func (u *userDB) DeleteUser(user *entity.User) error {
 
 func (u *userDB) GetAllUser() ([]*entity.User, error) {
 	var users []*entity.User
-	req := u.db.Model(&entity.User{}).Find(&users)
+	req := u.db.Preload("Organizations").Model(&entity.User{}).Find(&users)
 	return users, utils.TranslateErrors(req)
 }

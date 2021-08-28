@@ -4,8 +4,6 @@ import (
 	"errors"
 	"time"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
-	"github.com/go-ozzo/ozzo-validation/v4/is"
 	"github.com/google/uuid"
 	"github.com/itzmanish/slatomate/proto/slatomate"
 	"github.com/itzmanish/slatomate/utils"
@@ -57,14 +55,6 @@ func (user *User) ValidatePassword(password string) (bool, error) {
 
 // BeforeSave performs the validations
 func (user *User) BeforeSave(tx *gorm.DB) error {
-	err := validation.ValidateStruct(user,
-		validation.Field(&user.Email, validation.Required, is.Email),
-	)
-
-	if err != nil {
-		return err
-	}
-
 	if user.Email != "" {
 		var userWithEmail User
 		tx.Where(User{Email: user.Email}).First(&userWithEmail)
@@ -90,11 +80,19 @@ func SerializeUser(in *slatomate.User) User {
 
 //DeserializeUser convertsuser to proto user
 func DeserializeUser(in *User) slatomate.User {
+	var orgs []*slatomate.Organization
+	if len(in.Organizations) > 0 {
+		for _, org := range in.Organizations {
+			o := DeserializeOrganization(&org)
+			orgs = append(orgs, &o)
+		}
+	}
 	return slatomate.User{
 		Id:        in.ID.String(),
 		Name:      in.Name,
 		Email:     in.Email,
 		ApiKey:    in.APIKey,
+		Orgs:      orgs,
 		CreatedAt: in.CreatedAt.Format(time.RFC3339),
 	}
 }

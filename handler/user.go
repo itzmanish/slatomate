@@ -98,6 +98,7 @@ func (h *slatomateHandler) GetAllUser(ctx context.Context, in *emptypb.Empty, ou
 	if err != nil {
 		return err
 	}
+
 	out.Users = make([]*slatomatepb.User, len(users))
 	out.Count = int32(len(users))
 	for i, user := range users {
