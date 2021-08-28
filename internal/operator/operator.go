@@ -3,6 +3,7 @@ package operator
 import (
 	"strconv"
 
+	"github.com/itzmanish/go-micro/v2/logger"
 	"github.com/itzmanish/slatomate/internal/entity"
 	"github.com/mitchellh/mapstructure"
 	"github.com/slack-go/slack"
@@ -26,6 +27,7 @@ func Process(token string, job *entity.Job) error {
 }
 
 func updateStatus(token string, job *entity.Job) error {
+	logger.Debugf("Update status operator is invoked with token: %s on Job id: %s", token, job.ID)
 	data := StatusUpdateData{}
 	err := mapstructure.Decode(job.Data, &data)
 	if err != nil {

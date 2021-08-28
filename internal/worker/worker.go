@@ -9,13 +9,20 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-type Worker struct {
+type Worker interface {
+	Add(token string, job *entity.Job) error
+	Remove(jobID string)
+	Start()
+	Stop() error
+}
+
+type worker struct {
 	jobs sync.Map
 	cron cron.Cron
 }
 
-func NewWorker() *Worker {
-	w := &Worker{
+func NewWorker() Worker {
+	w := &worker{
 		jobs: sync.Map{},
 		cron: *cron.New(),
 	}
@@ -23,7 +30,7 @@ func NewWorker() *Worker {
 	return w
 }
 
-func (w *Worker) Add(token string, job *entity.Job) error {
+func (w *worker) Add(token string, job *entity.Job) error {
 	entryID, err := w.cron.AddFunc(job.ScheduleAt, func() {
 		err := operator.Process(token, job)
 		if err != nil {
@@ -35,19 +42,36 @@ func (w *Worker) Add(token string, job *entity.Job) error {
 	}
 
 	w.jobs.Store(entryID, job)
+	logger.Debugf("Job added for schedule_at: %s with job id: %s and entry id: %v", job.ScheduleAt, job.ID, entryID)
 	return nil
 }
 
-func (w *Worker) Remove(entryID cron.EntryID) {
+func (w *worker) Remove(jobID string) {
+	w.jobs.Range(func(key, value interface{}) bool {
+		if value != nil {
+			if job, ok := value.(*entity.Job); ok {
+				if job.ID.String() == jobID {
+					w.remove(key.(cron.EntryID))
+					return false
+				}
+			}
+		}
+		return true
+	})
+}
+
+func (w *worker) remove(entryID cron.EntryID) {
 	w.cron.Remove(entryID)
 	w.jobs.Delete(entryID)
+	logger.Debugf("Job with entry id: %s removed", entryID)
 }
 
-func (w *Worker) Start() {
+func (w *worker) Start() {
 	w.cron.Start()
+	logger.Debug("Worker started.")
 }
 
-func (w *Worker) Stop() error {
+func (w *worker) Stop() error {
 	return w.cron.Stop().Err()
 
 }
