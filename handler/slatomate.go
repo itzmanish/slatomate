@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/itzmanish/slatomate/internal/repository"
+	"github.com/itzmanish/slatomate/internal/worker"
 	slatomatepb "github.com/itzmanish/slatomate/proto/slatomate"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -22,7 +23,7 @@ type SlatomateHandler interface {
 	// Admin only
 	GetAllUser(context.Context, *emptypb.Empty, *slatomatepb.GetAllUserResponse) error
 	// Jobs
-	CreateJob(context.Context, *slatomatepb.CreateJobRequest, *slatomatepb.Job) error
+	CreateJob(context.Context, *slatomatepb.Job, *slatomatepb.Job) error
 	GetJob(context.Context, *slatomatepb.GetJobRequest, *slatomatepb.Job) error
 	DeleteJob(context.Context, *slatomatepb.DeleteJobRequest, *emptypb.Empty) error
 	GetAllJob(context.Context, *slatomatepb.GetAllJobRequset, *slatomatepb.GetAllJobResponse) error
@@ -31,8 +32,10 @@ type SlatomateHandler interface {
 type slatomateHandler struct {
 	userRepo repository.UserRepository
 	orgRepo  repository.OrganizationRepository
+	jobRepo  repository.JobRepository
+	worker   *worker.Worker
 }
 
-func NewHandler(userRepo repository.UserRepository, orgRepo repository.OrganizationRepository) SlatomateHandler {
-	return &slatomateHandler{userRepo, orgRepo}
+func NewHandler(userRepo repository.UserRepository, orgRepo repository.OrganizationRepository, jobRepo repository.JobRepository) SlatomateHandler {
+	return &slatomateHandler{userRepo, orgRepo, jobRepo, worker.NewWorker()}
 }
