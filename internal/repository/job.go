@@ -33,7 +33,7 @@ func (p *jobDB) GetJob(query *entity.Job) (*entity.Job, error) {
 }
 
 func (p *jobDB) DeleteJob(job *entity.Job) error {
-	res := p.db.Table("Jobs").Delete(job)
+	res := p.db.Delete(job)
 	return utils.TranslateErrors(res)
 }
 

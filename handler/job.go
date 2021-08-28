@@ -34,7 +34,7 @@ func (h *slatomateHandler) GetJob(ctx context.Context, in *slatomatepb.GetJobReq
 	if len(in.GetId()) == 0 || len(in.GetOrgId()) == 0 {
 		return errors.BadRequest("GET_JOB_HANDLER", "org_id and job id both fields are required!")
 	}
-	oid, err := uuid.Parse(in.GetId())
+	oid, err := uuid.Parse(in.GetOrgId())
 	if err != nil {
 		return errors.BadRequest("GET_JOB_HANDLER", "Organization id is invalid!")
 	}

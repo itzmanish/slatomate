@@ -1,6 +1,10 @@
 package entity
 
 import (
+	"database/sql/driver"
+	"encoding/json"
+	"errors"
+	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -11,6 +15,7 @@ import (
 
 type Status int
 type Task int
+type JSONData map[string]string
 
 const (
 	ActiveStatus Status = iota
@@ -23,12 +28,12 @@ const (
 
 // Job represent a Job
 type Job struct {
-	ID             uuid.UUID         `json:"id" gorm:"primary_key; unique; type:uuid;"`
-	Name           string            `json:"name" gorm:"type:varchar(100)"`
-	ScheduleAt     string            `json:"schedule_at" gorm:"type:varchar(100)"`
-	Task           Task              `json:"task" gorm:"type:int"`
-	Status         Status            `json:"status"`
-	Data           map[string]string `json:"data" gorm:"type:jsonb"`
+	ID             uuid.UUID `json:"id" gorm:"primary_key; unique; type:uuid;"`
+	Name           string    `json:"name" gorm:"type:varchar(100)"`
+	ScheduleAt     string    `json:"schedule_at" gorm:"type:varchar(100)"`
+	Task           Task      `json:"task" gorm:"type:int"`
+	Status         Status    `json:"status"`
+	Data           JSONData  `json:"data" gorm:"type:json"`
 	OrganizationID uuid.UUID
 	CreatedAt      time.Time
 	UpdatedAt      time.Time
@@ -39,6 +44,28 @@ func (job *Job) BeforeCreate(tx *gorm.DB) error {
 	u := uuid.New()
 	job.ID = u
 	return nil
+}
+
+func (jsonData *JSONData) Scan(value interface{}) error {
+	bytes, ok := value.([]byte)
+	if !ok {
+		return errors.New(fmt.Sprint("Failed to unmarshal JSONB value:", value))
+	}
+
+	result := JSONData{}
+	err := json.Unmarshal(bytes, &result)
+	*jsonData = result
+	return err
+}
+
+func (jsonData *JSONData) Value() (driver.Value, error) {
+	if len(*jsonData) == 0 {
+		return nil, nil
+	}
+	return json.Marshal(jsonData)
+}
+func (JSONData) GormDataType() string {
+	return "json"
 }
 
 //SerializeJob converts proto Job to Job struct
