@@ -27,19 +27,20 @@ func init() {
 }
 
 func main() {
-	// New Service
-	service := micro.NewService(
-		micro.Name(SERVICE_NAME),
-		micro.Version(SERVICE_VERSION),
-	)
-
 	pdb, err := db.New()
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// New Service
+	service := micro.NewService(
+		micro.Name(SERVICE_NAME),
+		micro.Version(SERVICE_VERSION),
+		micro.WrapHandler(wrapper.AuthHandler(auth.NewAPIKeyAuth(repository.NewUserRepository(pdb)))),
+	)
+
 	// Initialise service
-	service.Init(micro.WrapHandler(wrapper.AuthHandler(auth.NewAPIKeyAuth(repository.NewUserRepository(pdb)))))
+	service.Init()
 
 	// Register Handler
 	slatomate.RegisterSlatomateHandler(service.Server(),

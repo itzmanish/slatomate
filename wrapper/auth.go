@@ -31,7 +31,6 @@ func (arr Array) Has(value string) bool {
 func AuthHandler(a auth.Auth) server.HandlerWrapper {
 	return func(h server.HandlerFunc) server.HandlerFunc {
 		return func(ctx context.Context, req server.Request, rsp interface{}) error {
-
 			// Check for debug endpoints which should be excluded from auth
 			if NoAuthEndpoint.Has(req.Endpoint()) {
 				return h(ctx, req, rsp)
