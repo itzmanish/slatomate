@@ -5,6 +5,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/itzmanish/go-micro/v2/errors"
+	"github.com/itzmanish/go-micro/v2/logger"
 	"github.com/itzmanish/slatomate/internal/entity"
 	slatomatepb "github.com/itzmanish/slatomate/proto/slatomate"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -105,6 +106,39 @@ func (h *slatomateHandler) GetAllUser(ctx context.Context, in *emptypb.Empty, ou
 		puser := entity.DeserializeUser(user)
 		out.Users[i] = &puser
 	}
+	return nil
+}
+
+func (h *slatomateHandler) LoginUser(ctx context.Context, in *slatomatepb.User, out *slatomatepb.User) error {
+	logger.Debug("LoginUser request: ", in)
+	if len(in.Email) == 0 || len(in.Password) == 0 {
+		return errors.BadRequest("LoginUser", "Email/Password both are required!")
+	}
+	user, err := h.userRepo.GetUser(&entity.User{Email: in.Email})
+	if err != nil {
+		return err
+	}
+	ok, err := user.ValidatePassword(in.Password)
+	if err != nil {
+		return err
+	}
+	if !ok {
+		return errors.Unauthorized("LoginUser", "Email/password is not correct.")
+	}
+	*out = entity.DeserializeUser(user)
+	return nil
+}
+
+func (h *slatomateHandler) ValidateAPIKey(ctx context.Context, in *slatomatepb.APIKeyRequest, out *slatomatepb.User) error {
+	logger.Debug("ValidateAPIKey request: ", in)
+	if len(in.GetApiKey()) == 0 {
+		return errors.BadRequest("ValidateAPIKey", "API Key is required!")
+	}
+	user, err := h.userRepo.GetUser(&entity.User{APIKey: in.ApiKey})
+	if err != nil {
+		return err
+	}
+	*out = entity.DeserializeUser(user)
 	return nil
 }
 
