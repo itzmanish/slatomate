@@ -17,6 +17,8 @@ service Slatomate {
 	rpc GetUser (GetUserRequest) returns (User) {};
 	rpc DeleteUser (DeleteUserRequest) returns (google.protobuf.Empty) {};
 	rpc UpdateUser (UpdateUserRequest) returns (User) {};
+	rpc LoginUser (User) returns (User){};
+	rpc ValidateAPIKey (APIKeyRequest) returns (User) {};
 	// Not for now
 	rpc GenerateAPIKey (GenerateAPIKeyRequest) returns (GenerateAPIKeyResponse) {};
 	// Admin only
@@ -111,14 +113,19 @@ message GenerateAPIKeyResponse {
 	string api_key = 1;
 }
 
+message APIKeyRequest {
+	string api_key = 1;
+}
+
 message User {
 	string id = 1;
 	string name = 2;
 	string email = 3;
-	string api_key = 4;
-	repeated Organization orgs = 5; 
-	string created_at = 6;
-	string last_updated = 7;
+	string password = 4;
+	string api_key = 5;
+	repeated Organization orgs = 6; 
+	string created_at = 7;
+	string last_updated = 8;
 }
 
 // ====================== Job ====================

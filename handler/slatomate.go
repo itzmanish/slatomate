@@ -19,6 +19,8 @@ type SlatomateHandler interface {
 	GetUser(context.Context, *slatomatepb.GetUserRequest, *slatomatepb.User) error
 	DeleteUser(context.Context, *slatomatepb.DeleteUserRequest, *emptypb.Empty) error
 	UpdateUser(context.Context, *slatomatepb.UpdateUserRequest, *slatomatepb.User) error
+	LoginUser(ctx context.Context, in *slatomatepb.User, out *slatomatepb.User) error
+	ValidateAPIKey(ctx context.Context, in *slatomatepb.APIKeyRequest, out *slatomatepb.User) error
 	GenerateAPIKey(context.Context, *slatomatepb.GenerateAPIKeyRequest, *slatomatepb.GenerateAPIKeyResponse) error
 	// Admin only
 	GetAllUser(context.Context, *emptypb.Empty, *slatomatepb.GetAllUserResponse) error
