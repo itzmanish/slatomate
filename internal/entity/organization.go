@@ -45,7 +45,6 @@ func DeserializeOrganization(in *Organization) slatomate.Organization {
 		Id:          in.ID.String(),
 		Name:        in.Name,
 		SlackApikey: in.SlackAPIKey,
-		User:        in.UserID.String(),
 		CreatedAt:   in.CreatedAt.Format(time.RFC3339),
 	}
 }
