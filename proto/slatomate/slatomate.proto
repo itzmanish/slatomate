@@ -9,9 +9,11 @@ import "google/protobuf/timestamp.proto";
 service Slatomate {
 	rpc CreateOrganization (CreateOrganizationRequest) returns (Organization) {};
 	rpc AuthorizeOrganization (AuthorizeOrganizationRequest) returns (google.protobuf.Empty){};
+	rpc ValidateOrgAccess (ValidateOrgAccessRequest) returns (ValidateOrgAccessResponse){};
 	rpc GetAllOrganization (GetAllOrganizationRequest) returns (GetAllOrganizationResponse) {};
 	rpc GetOrganization (GetOrganizationRequest) returns (Organization) {};
 	rpc DeleteOrganization (DeleteOrganizationRequest) returns (google.protobuf.Empty) {};
+	rpc DeleteAllOrganization (google.protobuf.Empty) returns (google.protobuf.Empty) {};
 
 	rpc CreateUser (CreateUserRequest) returns (User) {};
 	rpc GetUser (GetUserRequest) returns (User) {};
@@ -47,8 +49,17 @@ message CreateOrganizationRequest {
 message AuthorizeOrganizationRequest {
 	string code = 1;
 	string scope = 2;
+	string org_id = 3;
 }
 
+message ValidateOrgAccessRequest{
+	string org_id = 1;
+}
+
+message ValidateOrgAccessResponse {
+	bool has_access = 1;
+	string user_id = 2;
+}
 
 message GetAllOrganizationRequest{
 	string user_id = 1;
@@ -62,6 +73,7 @@ message GetAllOrganizationResponse{
 message GetOrganizationRequest{
 	string id = 1;
 	string user_id = 2;
+	string name = 3;
 }
 
 message DeleteOrganizationRequest{

@@ -12,6 +12,8 @@ import (
 type SlatomateHandler interface {
 	CreateOrganization(context.Context, *slatomatepb.CreateOrganizationRequest, *slatomatepb.Organization) error
 	AuthorizeOrganization(ctx context.Context, in *slatomatepb.AuthorizeOrganizationRequest, out *emptypb.Empty) error
+	ValidateOrgAccess(ctx context.Context, in *slatomatepb.ValidateOrgAccessRequest, out *slatomatepb.ValidateOrgAccessResponse) error
+	DeleteAllOrganization(context.Context, *emptypb.Empty, *emptypb.Empty) error
 	GetAllOrganization(context.Context, *slatomatepb.GetAllOrganizationRequest, *slatomatepb.GetAllOrganizationResponse) error
 	GetOrganization(context.Context, *slatomatepb.GetOrganizationRequest, *slatomatepb.Organization) error
 	DeleteOrganization(context.Context, *slatomatepb.DeleteOrganizationRequest, *emptypb.Empty) error

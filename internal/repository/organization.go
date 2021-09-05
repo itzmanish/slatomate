@@ -12,6 +12,7 @@ type OrganizationRepository interface {
 	GetOrganization(*entity.Organization) (*entity.Organization, error)
 	GetAllOrganization(uuid.UUID) ([]*entity.Organization, error)
 	DeleteOrganization(*entity.Organization) error
+	UpdateOrganization(*entity.Organization) (*entity.Organization, error)
 }
 
 type organizationDB struct {
@@ -35,6 +36,15 @@ func (p *organizationDB) GetOrganization(query *entity.Organization) (*entity.Or
 func (p *organizationDB) DeleteOrganization(organization *entity.Organization) error {
 	res := p.db.Table("organizations").Delete(organization)
 	return utils.TranslateErrors(res)
+}
+
+func (p *organizationDB) UpdateOrganization(params *entity.Organization) (*entity.Organization, error) {
+	org, err := p.GetOrganization(&entity.Organization{ID: params.ID})
+	if err != nil {
+		return params, err
+	}
+	req := p.db.Model(&org).Updates(params)
+	return org, utils.TranslateErrors(req)
 }
 
 func (p *organizationDB) GetAllOrganization(userid uuid.UUID) ([]*entity.Organization, error) {

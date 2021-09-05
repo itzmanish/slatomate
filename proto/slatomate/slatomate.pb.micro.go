@@ -46,9 +46,11 @@ func NewSlatomateEndpoints() []*api.Endpoint {
 type SlatomateService interface {
 	CreateOrganization(ctx context.Context, in *CreateOrganizationRequest, opts ...client.CallOption) (*Organization, error)
 	AuthorizeOrganization(ctx context.Context, in *AuthorizeOrganizationRequest, opts ...client.CallOption) (*emptypb.Empty, error)
+	ValidateOrgAccess(ctx context.Context, in *ValidateOrgAccessRequest, opts ...client.CallOption) (*ValidateOrgAccessResponse, error)
 	GetAllOrganization(ctx context.Context, in *GetAllOrganizationRequest, opts ...client.CallOption) (*GetAllOrganizationResponse, error)
 	GetOrganization(ctx context.Context, in *GetOrganizationRequest, opts ...client.CallOption) (*Organization, error)
 	DeleteOrganization(ctx context.Context, in *DeleteOrganizationRequest, opts ...client.CallOption) (*emptypb.Empty, error)
+	DeleteAllOrganization(ctx context.Context, in *emptypb.Empty, opts ...client.CallOption) (*emptypb.Empty, error)
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...client.CallOption) (*User, error)
 	GetUser(ctx context.Context, in *GetUserRequest, opts ...client.CallOption) (*User, error)
 	DeleteUser(ctx context.Context, in *DeleteUserRequest, opts ...client.CallOption) (*emptypb.Empty, error)
@@ -98,6 +100,16 @@ func (c *slatomateService) AuthorizeOrganization(ctx context.Context, in *Author
 	return out, nil
 }
 
+func (c *slatomateService) ValidateOrgAccess(ctx context.Context, in *ValidateOrgAccessRequest, opts ...client.CallOption) (*ValidateOrgAccessResponse, error) {
+	req := c.c.NewRequest(c.name, "Slatomate.ValidateOrgAccess", in)
+	out := new(ValidateOrgAccessResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *slatomateService) GetAllOrganization(ctx context.Context, in *GetAllOrganizationRequest, opts ...client.CallOption) (*GetAllOrganizationResponse, error) {
 	req := c.c.NewRequest(c.name, "Slatomate.GetAllOrganization", in)
 	out := new(GetAllOrganizationResponse)
@@ -120,6 +132,16 @@ func (c *slatomateService) GetOrganization(ctx context.Context, in *GetOrganizat
 
 func (c *slatomateService) DeleteOrganization(ctx context.Context, in *DeleteOrganizationRequest, opts ...client.CallOption) (*emptypb.Empty, error) {
 	req := c.c.NewRequest(c.name, "Slatomate.DeleteOrganization", in)
+	out := new(emptypb.Empty)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *slatomateService) DeleteAllOrganization(ctx context.Context, in *emptypb.Empty, opts ...client.CallOption) (*emptypb.Empty, error) {
+	req := c.c.NewRequest(c.name, "Slatomate.DeleteAllOrganization", in)
 	out := new(emptypb.Empty)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
@@ -253,9 +275,11 @@ func (c *slatomateService) GetAllJob(ctx context.Context, in *GetAllJobRequset, 
 type SlatomateHandler interface {
 	CreateOrganization(context.Context, *CreateOrganizationRequest, *Organization) error
 	AuthorizeOrganization(context.Context, *AuthorizeOrganizationRequest, *emptypb.Empty) error
+	ValidateOrgAccess(context.Context, *ValidateOrgAccessRequest, *ValidateOrgAccessResponse) error
 	GetAllOrganization(context.Context, *GetAllOrganizationRequest, *GetAllOrganizationResponse) error
 	GetOrganization(context.Context, *GetOrganizationRequest, *Organization) error
 	DeleteOrganization(context.Context, *DeleteOrganizationRequest, *emptypb.Empty) error
+	DeleteAllOrganization(context.Context, *emptypb.Empty, *emptypb.Empty) error
 	CreateUser(context.Context, *CreateUserRequest, *User) error
 	GetUser(context.Context, *GetUserRequest, *User) error
 	DeleteUser(context.Context, *DeleteUserRequest, *emptypb.Empty) error
@@ -277,9 +301,11 @@ func RegisterSlatomateHandler(s server.Server, hdlr SlatomateHandler, opts ...se
 	type slatomate interface {
 		CreateOrganization(ctx context.Context, in *CreateOrganizationRequest, out *Organization) error
 		AuthorizeOrganization(ctx context.Context, in *AuthorizeOrganizationRequest, out *emptypb.Empty) error
+		ValidateOrgAccess(ctx context.Context, in *ValidateOrgAccessRequest, out *ValidateOrgAccessResponse) error
 		GetAllOrganization(ctx context.Context, in *GetAllOrganizationRequest, out *GetAllOrganizationResponse) error
 		GetOrganization(ctx context.Context, in *GetOrganizationRequest, out *Organization) error
 		DeleteOrganization(ctx context.Context, in *DeleteOrganizationRequest, out *emptypb.Empty) error
+		DeleteAllOrganization(ctx context.Context, in *emptypb.Empty, out *emptypb.Empty) error
 		CreateUser(ctx context.Context, in *CreateUserRequest, out *User) error
 		GetUser(ctx context.Context, in *GetUserRequest, out *User) error
 		DeleteUser(ctx context.Context, in *DeleteUserRequest, out *emptypb.Empty) error
@@ -312,6 +338,10 @@ func (h *slatomateHandler) AuthorizeOrganization(ctx context.Context, in *Author
 	return h.SlatomateHandler.AuthorizeOrganization(ctx, in, out)
 }
 
+func (h *slatomateHandler) ValidateOrgAccess(ctx context.Context, in *ValidateOrgAccessRequest, out *ValidateOrgAccessResponse) error {
+	return h.SlatomateHandler.ValidateOrgAccess(ctx, in, out)
+}
+
 func (h *slatomateHandler) GetAllOrganization(ctx context.Context, in *GetAllOrganizationRequest, out *GetAllOrganizationResponse) error {
 	return h.SlatomateHandler.GetAllOrganization(ctx, in, out)
 }
@@ -322,6 +352,10 @@ func (h *slatomateHandler) GetOrganization(ctx context.Context, in *GetOrganizat
 
 func (h *slatomateHandler) DeleteOrganization(ctx context.Context, in *DeleteOrganizationRequest, out *emptypb.Empty) error {
 	return h.SlatomateHandler.DeleteOrganization(ctx, in, out)
+}
+
+func (h *slatomateHandler) DeleteAllOrganization(ctx context.Context, in *emptypb.Empty, out *emptypb.Empty) error {
+	return h.SlatomateHandler.DeleteAllOrganization(ctx, in, out)
 }
 
 func (h *slatomateHandler) CreateUser(ctx context.Context, in *CreateUserRequest, out *User) error {

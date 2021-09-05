@@ -92,21 +92,72 @@ func (h *slatomateHandler) DeleteOrganization(ctx context.Context, in *slatomate
 	return h.orgRepo.DeleteOrganization(&entity.Organization{ID: oid, UserID: user.ID})
 }
 
-func (h *slatomateHandler) AuthorizeOrganization(ctx context.Context, in *slatomatepb.AuthorizeOrganizationRequest, out *emptypb.Empty) error {
-	logger.Debugf("Authorize Organization request: %v", in)
-
+func (h *slatomateHandler) DeleteAllOrganization(ctx context.Context, in *emptypb.Empty, out *emptypb.Empty) error {
 	user, ok := auth.AccountFromContext(ctx)
 	if !ok {
-		return errors.Unauthorized("AUTHORIZE_ORG", "Unauthorized access.")
+		return errors.Unauthorized("DELETE_ORG_HANDLER", "Unauthorized access.")
+	}
+
+	return h.orgRepo.DeleteOrganization(&entity.Organization{UserID: user.ID})
+}
+
+func (h *slatomateHandler) ValidateOrgAccess(ctx context.Context, in *slatomatepb.ValidateOrgAccessRequest, out *slatomatepb.ValidateOrgAccessResponse) error {
+	logger.Debugf("Validate Organization request: %v", in)
+	if len(in.OrgId) == 0 {
+		return errors.BadRequest("AUTHORIZE_ORG", "Organization id is required!")
+	}
+
+	oid, err := uuid.Parse(in.OrgId)
+	if err != nil {
+		return errors.BadRequest("AUTHORIZE_ORG", "Organization id is invalid!")
+	}
+	err = ValidateOrganizationAccess(ctx, oid)
+	if err != nil {
+		return err
+	}
+	*out = slatomatepb.ValidateOrgAccessResponse{HasAccess: true}
+	return nil
+}
+
+func (h *slatomateHandler) AuthorizeOrganization(ctx context.Context, in *slatomatepb.AuthorizeOrganizationRequest, out *emptypb.Empty) error {
+	logger.Debugf("Authorize Organization request: %v", in)
+	if len(in.OrgId) == 0 {
+		return errors.BadRequest("AUTHORIZE_ORG", "Organization id is required!")
+	}
+
+	oid, err := uuid.Parse(in.OrgId)
+	if err != nil {
+		return errors.BadRequest("AUTHORIZE_ORG", "Organization id is invalid!")
+	}
+	err = ValidateOrganizationAccess(ctx, oid)
+	if err != nil {
+		return err
 	}
 
 	if len(in.Code) == 0 {
 		return errors.BadRequest("AUTHORIZE_ORG", "code is invalid!")
 	}
+
 	sres, err := slack.GetOAuthV2Response(http.DefaultClient, os.Getenv("SLACK_CLIENT_ID"), os.Getenv("SLACK_CLIENT_SECRET"), in.Code, os.Getenv("SLACK_REDIRECT_URI"))
 	if err != nil {
 		return err
 	}
-	logger.Info(sres, user)
+	logger.Infof("%#v", sres)
+	_, err = h.orgRepo.UpdateOrganization(&entity.Organization{ID: oid, SlackAPIKey: sres.AuthedUser.AccessToken})
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func ValidateOrganizationAccess(ctx context.Context, id uuid.UUID) error {
+	user, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		return errors.Unauthorized("VALIDATE_ORG_ACCESS", "Unauthorized access.")
+	}
+
+	if ok := user.HaveOrg(id); !ok {
+		return errors.Unauthorized("VALIDATE_ORG_ACCESS", "Unauthorized access to this organization.")
+	}
 	return nil
 }
