@@ -1,10 +1,10 @@
 package config
 
 import (
-	"fmt"
 	"os"
 	"strings"
 
+	"github.com/itzmanish/go-micro/v2/logger"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -21,7 +21,12 @@ func InitConfig(cfgFile string) {
 
 		// Search config in config directory with name ".slatomate" (without extension).
 		viper.AddConfigPath(configDir)
-		viper.SetConfigName(".slatomate")
+		viper.SetConfigType("yaml")
+		viper.SetConfigName("slatomate")
+		viper.SetDefault("authtoken", "")
+		viper.SetDefault("service_host", "127.0.0.1:8081")
+		viper.SafeWriteConfig()
+
 	}
 
 	replacer := strings.NewReplacer(".", "_")
@@ -30,6 +35,6 @@ func InitConfig(cfgFile string) {
 
 	// If a config file is found, read it in.
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+		logger.Debug("Using config file:", viper.ConfigFileUsed())
 	}
 }
