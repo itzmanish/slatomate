@@ -12,5 +12,6 @@ func init() {
 }
 
 func NewClient() slatomate.SlatomateService {
-	return slatomate.NewSlatomateService("github.itzmanish.service.slatomate", grpc.NewClient())
+	c := grpc.NewClient()
+	return slatomate.NewSlatomateService("github.itzmanish.service.slatomate", c)
 }
