@@ -51,7 +51,7 @@ func init() {
 	// will be global for your application.
 
 	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.slatomate.yaml)")
-	rootCmd.AddCommand(subcommands.LoginCmd, subcommands.WhoamiCmd)
+	rootCmd.AddCommand(subcommands.LoginCmd, subcommands.WhoamiCmd, subcommands.OrgCmd)
 }
 
 func main() {

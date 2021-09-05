@@ -10,13 +10,15 @@ replace (
 )
 
 require (
-	github.com/fatih/color v1.12.0 // indirect
+	github.com/briandowns/spinner v1.16.0
+	github.com/fatih/color v1.12.0
 	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.3.0
 	github.com/itzmanish/go-micro/v2 v2.10.1
 	github.com/joho/godotenv v1.3.0
 	github.com/manifoldco/promptui v0.8.0
 	github.com/mitchellh/mapstructure v1.4.1
+	github.com/olekukonko/tablewriter v0.0.1
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/slack-go/slack v0.9.4
 	github.com/spf13/cobra v1.2.1
