@@ -34,7 +34,7 @@ func (p *organizationDB) GetOrganization(query *entity.Organization) (*entity.Or
 }
 
 func (p *organizationDB) DeleteOrganization(organization *entity.Organization) error {
-	res := p.db.Table("organizations").Delete(organization)
+	res := p.db.Table("organizations").Where(organization).Delete(organization)
 	return utils.TranslateErrors(res)
 }
 

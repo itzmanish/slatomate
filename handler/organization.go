@@ -142,7 +142,6 @@ func (h *slatomateHandler) AuthorizeOrganization(ctx context.Context, in *slatom
 	if err != nil {
 		return err
 	}
-	logger.Infof("%#v", sres)
 	_, err = h.orgRepo.UpdateOrganization(&entity.Organization{ID: oid, SlackAPIKey: sres.AuthedUser.AccessToken})
 	if err != nil {
 		return err
