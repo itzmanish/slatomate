@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/itzmanish/go-micro/v2/errors"
 	"github.com/itzmanish/go-micro/v2/logger"
+	"github.com/itzmanish/slatomate/internal/auth"
 	"github.com/itzmanish/slatomate/internal/entity"
 	slatomatepb "github.com/itzmanish/slatomate/proto/slatomate"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -79,14 +80,11 @@ func (h *slatomateHandler) DeleteUser(ctx context.Context, in *slatomatepb.Delet
 }
 
 func (h *slatomateHandler) UpdateUser(ctx context.Context, in *slatomatepb.UpdateUserRequest, out *slatomatepb.User) error {
-	if len(in.GetId()) == 0 {
-		return errors.BadRequest("DELETE_USER_HANDLER", "user id is required!")
+	user, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		return errors.Unauthorized("DELETE_USER_HANDLER", "Unauthorized access.")
 	}
-	id, err := uuid.Parse(in.GetId())
-	if err != nil {
-		return err
-	}
-	updatedUser, err := h.userRepo.UpdateUser(&entity.User{ID: id, Name: in.GetName()})
+	updatedUser, err := h.userRepo.UpdateUser(&entity.User{ID: user.ID, Name: in.GetName()})
 	if err != nil {
 		return err
 	}

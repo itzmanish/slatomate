@@ -8,6 +8,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/itzmanish/go-micro/v2/errors"
 	"github.com/itzmanish/go-micro/v2/logger"
+	"github.com/itzmanish/slatomate/internal/auth"
 	"github.com/itzmanish/slatomate/internal/entity"
 	slatomatepb "github.com/itzmanish/slatomate/proto/slatomate"
 	"github.com/slack-go/slack"
@@ -15,15 +16,15 @@ import (
 )
 
 func (h *slatomateHandler) CreateOrganization(ctx context.Context, in *slatomatepb.CreateOrganizationRequest, out *slatomatepb.Organization) error {
+	user, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		return errors.Unauthorized("CREATE_ORG_HANDLER", "Unauthorized access.")
+	}
 	if len(in.GetName()) == 0 {
 		return errors.BadRequest("CREATE_ORG_HANDLER", "Name is required.")
 	}
-	uid, err := uuid.Parse(in.UserId)
-	if err != nil {
-		return errors.BadRequest("CREATE_ORG_HANDLER", "user id is wrong.")
-	}
 	orgin := &entity.Organization{Name: in.GetName()}
-	err = h.orgRepo.CreateOrganization(uid, orgin)
+	err := h.orgRepo.CreateOrganization(user.ID, orgin)
 	if err != nil {
 		return err
 	}
@@ -32,14 +33,12 @@ func (h *slatomateHandler) CreateOrganization(ctx context.Context, in *slatomate
 }
 
 func (h *slatomateHandler) GetAllOrganization(ctx context.Context, in *slatomatepb.GetAllOrganizationRequest, out *slatomatepb.GetAllOrganizationResponse) error {
-	if len(in.GetUserId()) == 0 {
-		return errors.BadRequest("GET_ALL_ORG_HANDLER", "User id is required!")
+	user, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		return errors.Unauthorized("GET_ALL_ORG_HANDLER", "Unauthorized access.")
 	}
-	id, err := uuid.Parse(in.GetUserId())
-	if err != nil {
-		return errors.BadRequest("GET_ALL_ORG_HANDLER", "User id is wrong!")
-	}
-	res, err := h.orgRepo.GetAllOrganization(id)
+
+	res, err := h.orgRepo.GetAllOrganization(user.ID)
 	if err != nil {
 		return err
 	}
@@ -54,18 +53,20 @@ func (h *slatomateHandler) GetAllOrganization(ctx context.Context, in *slatomate
 }
 
 func (h *slatomateHandler) GetOrganization(ctx context.Context, in *slatomatepb.GetOrganizationRequest, out *slatomatepb.Organization) error {
-	if len(in.Id) == 0 || len(in.UserId) == 0 {
-		return errors.BadRequest("GET_ORG_HANDLER", "Organization id and User id both are required!")
+	user, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		return errors.Unauthorized("GET_ORG_HANDLER", "Unauthorized access.")
+	}
+
+	if len(in.Id) == 0 {
+		return errors.BadRequest("GET_ORG_HANDLER", "Organization id is required!")
 	}
 	oid, err := uuid.Parse(in.GetId())
 	if err != nil {
 		return errors.BadRequest("GET_ORG_HANDLER", "Organization id is invalid!")
 	}
-	uid, err := uuid.Parse(in.GetUserId())
-	if err != nil {
-		return errors.BadRequest("GET_ORG_HANDLER", "User id is invalid!")
-	}
-	org, err := h.orgRepo.GetOrganization(&entity.Organization{ID: oid, UserID: uid})
+
+	org, err := h.orgRepo.GetOrganization(&entity.Organization{ID: oid, UserID: user.ID})
 	if err != nil {
 		return err
 	}
@@ -74,24 +75,31 @@ func (h *slatomateHandler) GetOrganization(ctx context.Context, in *slatomatepb.
 }
 
 func (h *slatomateHandler) DeleteOrganization(ctx context.Context, in *slatomatepb.DeleteOrganizationRequest, out *emptypb.Empty) error {
-	if len(in.Id) == 0 || len(in.UserId) == 0 {
-		return errors.BadRequest("DELETE_ORG_HANDLER", "Organization id and User id both are required!")
+	user, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		return errors.Unauthorized("DELETE_ORG_HANDLER", "Unauthorized access.")
+	}
+
+	if len(in.Id) == 0 {
+		return errors.BadRequest("DELETE_ORG_HANDLER", "Organization id is required!")
 	}
 
 	oid, err := uuid.Parse(in.GetId())
 	if err != nil {
 		return errors.BadRequest("DELETE_ORG_HANDLER", "Organization id is invalid!")
 	}
-	uid, err := uuid.Parse(in.GetUserId())
-	if err != nil {
-		return errors.BadRequest("DELETE_ORG_HANDLER", "User id is invalid!")
-	}
 
-	return h.orgRepo.DeleteOrganization(&entity.Organization{ID: oid, UserID: uid})
+	return h.orgRepo.DeleteOrganization(&entity.Organization{ID: oid, UserID: user.ID})
 }
 
 func (h *slatomateHandler) AuthorizeOrganization(ctx context.Context, in *slatomatepb.AuthorizeOrganizationRequest, out *emptypb.Empty) error {
-	logger.Info("Authorize Organization request: %v", in)
+	logger.Debugf("Authorize Organization request: %v", in)
+
+	user, ok := auth.AccountFromContext(ctx)
+	if !ok {
+		return errors.Unauthorized("AUTHORIZE_ORG", "Unauthorized access.")
+	}
+
 	if len(in.Code) == 0 {
 		return errors.BadRequest("AUTHORIZE_ORG", "code is invalid!")
 	}
@@ -99,6 +107,6 @@ func (h *slatomateHandler) AuthorizeOrganization(ctx context.Context, in *slatom
 	if err != nil {
 		return err
 	}
-	logger.Info(sres)
+	logger.Info(sres, user)
 	return nil
 }
