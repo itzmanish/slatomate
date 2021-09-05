@@ -19,12 +19,15 @@ import (
 	"context"
 	"log"
 
+	"github.com/fatih/color"
+	"github.com/itzmanish/go-micro/v2/client"
 	"github.com/itzmanish/go-micro/v2/errors"
 	"github.com/itzmanish/go-micro/v2/metadata"
 	"github.com/itzmanish/slatomate/cmd/api"
 	"github.com/itzmanish/slatomate/cmd/utils"
 	"github.com/itzmanish/slatomate/proto/slatomate"
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 )
 
 // LoginCmd represents the login command
@@ -35,7 +38,14 @@ var LoginCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		err := Login(cmd, args)
 		if err != nil {
-			log.Fatal(err)
+			err := errors.FromError(err)
+			if err.Code == 404 {
+				color.Red("No user exists with this email")
+			} else if err.Code == 500 {
+				color.Red("Something is wrong with server.")
+			} else {
+				color.Red("Email/Password didn't match.")
+			}
 		}
 	},
 }
@@ -45,10 +55,8 @@ var WhoamiCmd = &cobra.Command{
 	Short: "Get the current logged in user",
 	Long:  `Get the information about current logged in user`,
 	Run: func(cmd *cobra.Command, args []string) {
-		err := Whoami()
-		if err != nil {
-			log.Fatal(err)
-		}
+		Whoami()
+
 	},
 }
 
@@ -57,25 +65,26 @@ func Login(cmd *cobra.Command, args []string) error {
 	passowrdContent := utils.PromptContent{ErrorMsg: "Password is required", Label: "Password", Type: utils.PasswordPrompt}
 	email := utils.PromptGetInput(emailContent)
 	password := utils.PromptGetInput(passowrdContent)
-	users, err := api.APIClient.LoginUser(context.TODO(), &slatomate.User{Email: email, Password: password})
+	user, err := api.APIClient.LoginUser(context.TODO(), &slatomate.User{Email: email, Password: password})
 	if err != nil {
 		return err
 	}
-	log.Println(users)
-
+	viper.Set("apitoken", user.ApiKey)
+	color.Green("Successfully logged in")
 	return nil
 }
 
-func Whoami() error {
-	api_key := "VzUacFTqgYkjzqqPzmDqCXxYRwcO"
-	ctx := context.TODO()
-	if ok := metadata.SetOutgoingContext(ctx, metadata.Metadata{"Authorization": "APIKEY " + api_key}); !ok {
-		return errors.InternalServerError("APIKEY_SET_FAILED", "Unable to set apikey")
-	}
-	u, err := api.APIClient.GetUser(ctx, &slatomate.GetUserRequest{ApiKey: api_key})
+func Whoami() {
+	// api_key, ok := viper.Get("APIKEY").(string)
+	// if !ok || len(api_key) == 0 {
+	// 	color.Red("You are not logged in.")
+	// 	return
+	// }
+	api_key := "kjsdf"
+	ctx := metadata.Set(context.TODO(), "Authorization", ("APIKEY " + api_key))
+	u, err := api.APIClient.GetUser(ctx, &slatomate.GetUserRequest{ApiKey: api_key}, client.WithAddress(viper.GetString("service_host")))
 	if err != nil {
-		return err
+		color.Red("Got error: %s", err.Error())
 	}
 	log.Println(u)
-	return nil
 }

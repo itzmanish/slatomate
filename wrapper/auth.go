@@ -40,7 +40,7 @@ func AuthHandler(a auth.Auth) server.HandlerWrapper {
 			// then the token can be blank without erroring
 			header, ok := metadata.Get(ctx, "Authorization")
 			if !ok {
-				errors.Unauthorized("NO_APIKEY", "API key is required!")
+				errors.Unauthorized("NO_APIKEY", "Auth token is required!")
 			}
 			// Ensure the correct scheme is being used
 			if !strings.HasPrefix(header, auth.Scheme) {
@@ -50,7 +50,7 @@ func AuthHandler(a auth.Auth) server.HandlerWrapper {
 			// Strip the prefix and inspect the resulting token
 			account, err := a.Inspect(strings.TrimPrefix(header, auth.Scheme))
 			if err != nil {
-				return errors.Unauthorized("INVALID_APIKEY", err.Error())
+				return errors.Unauthorized("INVALID_APIKEY", "Invalid Auth Token")
 			}
 
 			// // There is an account, set it in the context
