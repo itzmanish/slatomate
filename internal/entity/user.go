@@ -22,6 +22,17 @@ type User struct {
 	UpdatedAt     time.Time
 }
 
+// HaveOrg checks if given organization id exists in user's organization
+func (user *User) HaveOrg(id uuid.UUID) bool {
+	var exist bool
+	for _, org := range user.Organizations {
+		if org.ID == id {
+			exist = true
+		}
+	}
+	return exist
+}
+
 // BeforeCreate will set a UUID rather than numeric ID.
 func (user *User) BeforeCreate(tx *gorm.DB) error {
 	u := uuid.New()
