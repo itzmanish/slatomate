@@ -17,7 +17,6 @@ package subcommands
 
 import (
 	"context"
-	"log"
 
 	"github.com/fatih/color"
 	"github.com/itzmanish/go-micro/v2/client"
@@ -69,22 +68,22 @@ func Login(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	viper.Set("apitoken", user.ApiKey)
+	viper.Set("auth_token", user.ApiKey)
+	viper.WriteConfig()
 	color.Green("Successfully logged in")
 	return nil
 }
 
 func Whoami() {
-	// api_key, ok := viper.Get("APIKEY").(string)
-	// if !ok || len(api_key) == 0 {
-	// 	color.Red("You are not logged in.")
-	// 	return
-	// }
-	api_key := "kjsdf"
-	ctx := metadata.Set(context.TODO(), "Authorization", ("APIKEY " + api_key))
-	u, err := api.APIClient.GetUser(ctx, &slatomate.GetUserRequest{ApiKey: api_key}, client.WithAddress(viper.GetString("service_host")))
+	auth_token, ok := viper.Get("auth_token").(string)
+	if !ok || len(auth_token) == 0 {
+		color.Red("You are not logged in.")
+		return
+	}
+	ctx := metadata.Set(context.TODO(), "Authorization", ("APIKEY " + auth_token))
+	u, err := api.APIClient.GetUser(ctx, &slatomate.GetUserRequest{ApiKey: auth_token}, client.WithAddress(viper.GetString("service_host")))
 	if err != nil {
 		color.Red("Got error: %s", err.Error())
 	}
-	log.Println(u)
+	color.Green("You are logged in as %s", u.Name)
 }

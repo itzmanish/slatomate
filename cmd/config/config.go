@@ -23,7 +23,7 @@ func InitConfig(cfgFile string) {
 		viper.AddConfigPath(configDir)
 		viper.SetConfigType("yaml")
 		viper.SetConfigName("slatomate")
-		viper.SetDefault("authtoken", "")
+		viper.SetDefault("auth_token", "")
 		viper.SetDefault("service_host", "127.0.0.1:8081")
 		viper.SafeWriteConfig()
 
