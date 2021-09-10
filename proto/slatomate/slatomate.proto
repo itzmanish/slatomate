@@ -50,6 +50,8 @@ message AuthorizeOrganizationRequest {
 	string code = 1;
 	string scope = 2;
 	string org_id = 3;
+	string user_id = 4;
+	string error = 5;
 }
 
 message ValidateOrgAccessRequest{
