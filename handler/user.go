@@ -127,7 +127,7 @@ func (h *slatomateHandler) LoginUser(ctx context.Context, in *slatomatepb.User, 
 	return nil
 }
 
-func (h *slatomateHandler) ValidateAPIKey(ctx context.Context, in *slatomatepb.APIKeyRequest, out *slatomatepb.User) error {
+func (h *slatomateHandler) Me(ctx context.Context, in *slatomatepb.APIKeyRequest, out *slatomatepb.User) error {
 	logger.Debug("ValidateAPIKey request: ", in)
 	if len(in.GetApiKey()) == 0 {
 		return errors.BadRequest("ValidateAPIKey", "API Key is required!")

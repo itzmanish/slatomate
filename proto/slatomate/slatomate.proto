@@ -20,7 +20,7 @@ service Slatomate {
 	rpc DeleteUser (DeleteUserRequest) returns (google.protobuf.Empty) {};
 	rpc UpdateUser (UpdateUserRequest) returns (User) {};
 	rpc LoginUser (User) returns (User){};
-	rpc ValidateAPIKey (APIKeyRequest) returns (User) {};
+	rpc Me (APIKeyRequest) returns (User) {};
 	// Not for now
 	rpc GenerateAPIKey (GenerateAPIKeyRequest) returns (GenerateAPIKeyResponse) {};
 	// Admin only
