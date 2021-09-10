@@ -118,11 +118,11 @@ func (h *slatomateHandler) ValidateOrgAccess(ctx context.Context, in *slatomatep
 	if err != nil {
 		return errors.BadRequest("AUTHORIZE_ORG", "Organization id is invalid!")
 	}
-	_, err = validateOrganizationAccessWithContext(ctx, oid)
+	user, err := validateOrganizationAccessWithContext(ctx, oid)
 	if err != nil {
 		return err
 	}
-	*out = slatomatepb.ValidateOrgAccessResponse{HasAccess: true}
+	*out = slatomatepb.ValidateOrgAccessResponse{HasAccess: true, UserId: user.ID.String()}
 	return nil
 }
 
@@ -130,6 +130,9 @@ func (h *slatomateHandler) AuthorizeOrganization(ctx context.Context, in *slatom
 	logger.Debugf("Authorize Organization request: %v", in)
 	if (len(in.OrgId) == 0 || len(in.Code) == 0 || len(in.UserId) == 0) && len(in.Error) == 0 {
 		return errors.BadRequest("AUTHORIZE_ORG", "Organization id, User id and code are required!")
+	}
+	if len(in.GetError()) != 0 {
+		return errors.Unauthorized("AUTHORIZE_ORG", "Slack rejected this installation with error %v", in.GetError())
 	}
 	userID, err := uuid.Parse(in.UserId)
 	if err != nil {
