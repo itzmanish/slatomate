@@ -52,6 +52,7 @@ message AuthorizeOrganizationRequest {
 	string org_id = 3;
 	string user_id = 4;
 	string error = 5;
+	string state = 6;
 }
 
 message ValidateOrgAccessRequest{
