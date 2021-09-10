@@ -58,15 +58,21 @@ func (h *slatomateHandler) GetOrganization(ctx context.Context, in *slatomatepb.
 		return errors.Unauthorized("GET_ORG_HANDLER", "Unauthorized access.")
 	}
 
-	if len(in.Id) == 0 {
-		return errors.BadRequest("GET_ORG_HANDLER", "Organization id is required!")
+	if len(in.Id) == 0 && len(in.Name) == 0 {
+		return errors.BadRequest("GET_ORG_HANDLER", "Organization id/name is required!")
 	}
-	oid, err := uuid.Parse(in.GetId())
-	if err != nil {
-		return errors.BadRequest("GET_ORG_HANDLER", "Organization id is invalid!")
+	org := &entity.Organization{UserID: user.ID}
+	if len(in.GetId()) != 0 {
+		oid, err := uuid.Parse(in.GetId())
+		if err != nil {
+			return errors.BadRequest("GET_ORG_HANDLER", "Organization id is invalid!")
+		}
+		org.ID = oid
+	} else {
+		org.Name = in.GetName()
 	}
 
-	org, err := h.orgRepo.GetOrganization(&entity.Organization{ID: oid, UserID: user.ID})
+	org, err := h.orgRepo.GetOrganization(org)
 	if err != nil {
 		return err
 	}
@@ -111,7 +117,7 @@ func (h *slatomateHandler) ValidateOrgAccess(ctx context.Context, in *slatomatep
 	if err != nil {
 		return errors.BadRequest("AUTHORIZE_ORG", "Organization id is invalid!")
 	}
-	err = ValidateOrganizationAccess(ctx, oid)
+	_, err = validateOrganizationAccess(ctx, oid)
 	if err != nil {
 		return err
 	}
@@ -129,7 +135,7 @@ func (h *slatomateHandler) AuthorizeOrganization(ctx context.Context, in *slatom
 	if err != nil {
 		return errors.BadRequest("AUTHORIZE_ORG", "Organization id is invalid!")
 	}
-	err = ValidateOrganizationAccess(ctx, oid)
+	_, err = validateOrganizationAccess(ctx, oid)
 	if err != nil {
 		return err
 	}
@@ -149,14 +155,14 @@ func (h *slatomateHandler) AuthorizeOrganization(ctx context.Context, in *slatom
 	return nil
 }
 
-func ValidateOrganizationAccess(ctx context.Context, id uuid.UUID) error {
+func validateOrganizationAccess(ctx context.Context, id uuid.UUID) (*entity.User, error) {
 	user, ok := auth.AccountFromContext(ctx)
 	if !ok {
-		return errors.Unauthorized("VALIDATE_ORG_ACCESS", "Unauthorized access.")
+		return user, errors.Unauthorized("VALIDATE_ORG_ACCESS", "Unauthorized access.")
 	}
 
 	if ok := user.HaveOrg(id); !ok {
-		return errors.Unauthorized("VALIDATE_ORG_ACCESS", "Unauthorized access to this organization.")
+		return user, errors.Unauthorized("VALIDATE_ORG_ACCESS", "Unauthorized access to this organization.")
 	}
-	return nil
+	return user, nil
 }
