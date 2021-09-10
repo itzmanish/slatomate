@@ -46,11 +46,12 @@ var orgListCmd = &cobra.Command{
 }
 
 var orgCreateCmd = &cobra.Command{
-	Use:   "create",
+	Use:   "create [Org Name]",
 	Short: "Create new organization",
 	Long:  `Create new organization`,
+	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		createOrganization()
+		createOrganization(args)
 
 	},
 }
@@ -107,6 +108,7 @@ func listOrganization() {
 		color.Red("\n%v", err)
 		os.Exit(1)
 	}
+	color.Green("\nTotal Organizations available: %v\n", orgs.Count)
 	table := tablewriter.NewWriter(os.Stdout)
 
 	table.SetHeader([]string{"ID", "Name", "Slack APIKey", "Created At"})
@@ -117,7 +119,6 @@ func listOrganization() {
 		tablewriter.Colors{tablewriter.FgBlackColor, tablewriter.Bold, tablewriter.BgHiWhiteColor},
 	)
 
-	table.SetCaption(true, fmt.Sprintf("Total Organizations available: %v", orgs.Count))
 	for _, org := range orgs.Organizations {
 		table.Append([]string{org.Id, org.Name, org.SlackApikey, org.CreatedAt})
 	}
@@ -125,12 +126,12 @@ func listOrganization() {
 	table.Render()
 }
 
-func createOrganization() {
-	name := utils.PromptGetInput(utils.PromptContent{Label: "Name", Type: utils.TextPrompt, ErrorMsg: "Name is required."})
+func createOrganization(args []string) {
+	name := args[0]
 	auth_token, ok := viper.Get("auth_token").(string)
 	if !ok || len(auth_token) == 0 {
 		color.Red("You are not logged in.")
-		os.Exit(1)
+		return
 	}
 	ctx := metadata.Set(context.TODO(), "Authorization", ("APIKEY " + auth_token))
 	s := spinner.New(spinner.CharSets[4], 100*time.Millisecond)
@@ -140,7 +141,7 @@ func createOrganization() {
 	s.Stop()
 	if err != nil {
 		color.Red("\n%v", err)
-		os.Exit(1)
+		return
 	}
 	color.Green("\nOrg created: %v\n", org)
 	authorizeOrganization([]string{org.Id})
@@ -152,7 +153,7 @@ func getOrganization(args []string) {
 	auth_token, ok := viper.Get("auth_token").(string)
 	if !ok || len(auth_token) == 0 {
 		color.Red("You are not logged in.")
-		os.Exit(1)
+		return
 	}
 	ctx := metadata.Set(context.TODO(), "Authorization", ("APIKEY " + auth_token))
 	s := spinner.New(spinner.CharSets[4], 100*time.Millisecond)
@@ -162,7 +163,7 @@ func getOrganization(args []string) {
 	s.Stop()
 	if err != nil {
 		color.Red("\n%v", err)
-		os.Exit(1)
+		return
 	}
 	color.Green("\nOrganization info: %v", org)
 }
@@ -172,7 +173,7 @@ func deleteOrganization(args []string) {
 	auth_token, ok := viper.Get("auth_token").(string)
 	if !ok || len(auth_token) == 0 {
 		color.Red("You are not logged in.")
-		os.Exit(1)
+		return
 	}
 	ctx := metadata.Set(context.TODO(), "Authorization", ("APIKEY " + auth_token))
 	s := spinner.New(spinner.CharSets[4], 100*time.Millisecond)
@@ -187,7 +188,7 @@ func deleteOrganization(args []string) {
 	s.Stop()
 	if err != nil {
 		color.Red("\n%v", err)
-		os.Exit(1)
+		return
 	}
 	color.Green("\nOrganization deleted: %v", id)
 }
@@ -199,17 +200,18 @@ func authorizeOrganization(args []string) {
 
 	if err != nil {
 		color.White("Unable to open browser. Please navigate to the following link in your browser: %s", url)
+	} else {
+		color.White("Please navigate to the following link in your browser: %s", url)
 	}
-	color.White("Please navigate to the following link in your browser: %s", url)
 	code, err := startOauthResponseServer()
 	if err != nil {
 		color.Red("%v", err)
-		os.Exit(1)
+		return
 	}
 	auth_token, ok := viper.Get("auth_token").(string)
 	if !ok || len(auth_token) == 0 {
 		color.Red("You are not logged in.")
-		os.Exit(1)
+		return
 	}
 	ctx := metadata.Set(context.TODO(), "Authorization", ("APIKEY " + auth_token))
 	s := spinner.New(spinner.CharSets[4], 100*time.Millisecond)
@@ -219,9 +221,9 @@ func authorizeOrganization(args []string) {
 	s.Stop()
 	if err != nil {
 		color.Red("\n%v", err)
-		os.Exit(1)
+		return
 	}
-	color.Green("\n Organization authorised successfully.")
+	color.Green("\nOrganization authorised successfully.")
 }
 
 func startOauthResponseServer() (string, error) {
