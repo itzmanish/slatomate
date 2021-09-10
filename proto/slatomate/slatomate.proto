@@ -16,13 +16,24 @@ service Slatomate {
 	};
 	rpc AuthorizeOrganization (AuthorizeOrganizationRequest) returns (google.protobuf.Empty){
 		option (google.api.http) = {
-			post : "/v1/slatomate/org/authorize",
-			body : "*"
+			get : "/v1/slatomate/org/authorize"
+		};
+	};
+	rpc ValidateOrgAccess (ValidateOrgAccessRequest) returns (ValidateOrgAccessResponse){
+		option (google.api.http) = {
+			post : "/v1/slatomate/org/{org_id}",
 		      };
 	};
-	rpc ValidateOrgAccess (ValidateOrgAccessRequest) returns (ValidateOrgAccessResponse){};
-	rpc GetAllOrganization (GetAllOrganizationRequest) returns (GetAllOrganizationResponse) {};
-	rpc GetOrganization (GetOrganizationRequest) returns (Organization) {};
+	rpc GetAllOrganization (GetAllOrganizationRequest) returns (GetAllOrganizationResponse) {
+		option (google.api.http) = {
+			get : "/v1/slatomate/orgs"
+		};
+	};
+	rpc GetOrganization (GetOrganizationRequest) returns (Organization) {
+		option (google.api.http) = {
+			get : "/v1/slatomate/org/{id}"
+		};
+	};
 	rpc DeleteOrganization (DeleteOrganizationRequest) returns (google.protobuf.Empty) {};
 	rpc DeleteAllOrganization (google.protobuf.Empty) returns (google.protobuf.Empty) {};
 
