@@ -6,6 +6,7 @@ package slatomate
 import (
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	math "math"
@@ -38,7 +39,29 @@ var _ server.Option
 // Api Endpoints for Slatomate service
 
 func NewSlatomateEndpoints() []*api.Endpoint {
-	return []*api.Endpoint{}
+	return []*api.Endpoint{
+		&api.Endpoint{
+			Name:    "Slatomate.CreateOrganization",
+			Path:    []string{"/v1/slatomate/org"},
+			Method:  []string{"POST"},
+			Body:    "*",
+			Handler: "rpc",
+		},
+		&api.Endpoint{
+			Name:    "Slatomate.AuthorizeOrganization",
+			Path:    []string{"/v1/slatomate/org/authorize"},
+			Method:  []string{"POST"},
+			Body:    "*",
+			Handler: "rpc",
+		},
+		&api.Endpoint{
+			Name:    "Slatomate.LoginUser",
+			Path:    []string{"/v1/slatomate/login"},
+			Method:  []string{"POST"},
+			Body:    "*",
+			Handler: "rpc",
+		},
+	}
 }
 
 // Client API for Slatomate service
@@ -323,6 +346,27 @@ func RegisterSlatomateHandler(s server.Server, hdlr SlatomateHandler, opts ...se
 		slatomate
 	}
 	h := &slatomateHandler{hdlr}
+	opts = append(opts, api.WithEndpoint(&api.Endpoint{
+		Name:    "Slatomate.CreateOrganization",
+		Path:    []string{"/v1/slatomate/org"},
+		Method:  []string{"POST"},
+		Body:    "*",
+		Handler: "rpc",
+	}))
+	opts = append(opts, api.WithEndpoint(&api.Endpoint{
+		Name:    "Slatomate.AuthorizeOrganization",
+		Path:    []string{"/v1/slatomate/org/authorize"},
+		Method:  []string{"POST"},
+		Body:    "*",
+		Handler: "rpc",
+	}))
+	opts = append(opts, api.WithEndpoint(&api.Endpoint{
+		Name:    "Slatomate.LoginUser",
+		Path:    []string{"/v1/slatomate/login"},
+		Method:  []string{"POST"},
+		Body:    "*",
+		Handler: "rpc",
+	}))
 	return s.Handle(s.NewHandler(&Slatomate{h}, opts...))
 }
 

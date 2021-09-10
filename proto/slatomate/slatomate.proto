@@ -5,10 +5,21 @@ option go_package="proto/slatomate";
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
 
 service Slatomate {
-	rpc CreateOrganization (CreateOrganizationRequest) returns (Organization) {};
-	rpc AuthorizeOrganization (AuthorizeOrganizationRequest) returns (google.protobuf.Empty){};
+	rpc CreateOrganization (CreateOrganizationRequest) returns (Organization) {
+		option (google.api.http) = {
+			post : "/v1/slatomate/org",
+			body : "*"
+		      };
+	};
+	rpc AuthorizeOrganization (AuthorizeOrganizationRequest) returns (google.protobuf.Empty){
+		option (google.api.http) = {
+			post : "/v1/slatomate/org/authorize",
+			body : "*"
+		      };
+	};
 	rpc ValidateOrgAccess (ValidateOrgAccessRequest) returns (ValidateOrgAccessResponse){};
 	rpc GetAllOrganization (GetAllOrganizationRequest) returns (GetAllOrganizationResponse) {};
 	rpc GetOrganization (GetOrganizationRequest) returns (Organization) {};
@@ -19,7 +30,12 @@ service Slatomate {
 	rpc GetUser (GetUserRequest) returns (User) {};
 	rpc DeleteUser (DeleteUserRequest) returns (google.protobuf.Empty) {};
 	rpc UpdateUser (UpdateUserRequest) returns (User) {};
-	rpc LoginUser (User) returns (User){};
+	rpc LoginUser (User) returns (User){
+		option (google.api.http) = {
+			post : "/v1/slatomate/login",
+			body : "*"
+		      };
+	};
 	rpc Me (APIKeyRequest) returns (User) {};
 	// Not for now
 	rpc GenerateAPIKey (GenerateAPIKeyRequest) returns (GenerateAPIKeyResponse) {};
