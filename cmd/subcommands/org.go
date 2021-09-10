@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"time"
 
@@ -211,34 +212,17 @@ func authorizeOrganization(args []string) {
 		color.Red("You are not logged in.")
 		return
 	}
-	url := viper.GetString("oauth_url") + fmt.Sprintf("&redirect_uri=https://localhost:8888/v1/oauth/slack/callback?user_id=%v&org_id=%v", userID, id)
-	err := utils.Openbrowser(url)
+	redirect_uri := fmt.Sprintf("https://localhost:8080/slatomate/authorizeOrganization?user_id=%v&org_id=%v", userID, id)
+
+	uri := viper.GetString("oauth_url") + "&redirect_uri=" + url.QueryEscape(redirect_uri)
+	err := utils.Openbrowser(uri)
 
 	if err != nil {
-		color.White("Unable to open browser. Please navigate to the following link in your browser: %s", url)
+		color.White("Unable to open browser. Please navigate to the following link in your browser: %s", uri)
 	} else {
-		color.White("Please navigate to the following link in your browser: %s", url)
+		color.White("Please navigate to the following link in your browser: %s", uri)
 	}
-	code, err := startOauthResponseServer()
-	if err != nil {
-		color.Red("%v", err)
-		return
-	}
-	ctx, err := GetAuthContext()
-	if err != nil {
-		color.Red("Error: %v", err)
-		return
-	}
-	s := spinner.New(spinner.CharSets[4], 100*time.Millisecond)
-	s.Prefix = fmt.Sprintf("Authorizing organization %s ", id)
-	s.Start()
-	_, err = api.APIClient.AuthorizeOrganization(ctx, &slatomate.AuthorizeOrganizationRequest{Code: code, OrgId: id}, client.WithAddress(viper.GetString("service_host")))
-	s.Stop()
-	if err != nil {
-		color.Red("\n%v", err)
-		return
-	}
-	color.Green("\nOrganization authorised successfully.")
+
 }
 
 func setOrganization(args []string) {

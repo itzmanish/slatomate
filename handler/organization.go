@@ -2,6 +2,7 @@ package handler
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 
@@ -147,7 +148,8 @@ func (h *slatomateHandler) AuthorizeOrganization(ctx context.Context, in *slatom
 		return err
 	}
 
-	sres, err := slack.GetOAuthV2Response(http.DefaultClient, os.Getenv("SLACK_CLIENT_ID"), os.Getenv("SLACK_CLIENT_SECRET"), in.Code, os.Getenv("SLACK_REDIRECT_URI"))
+	redirect_uri := fmt.Sprintf("%s?user_id=%s&org_id=%s", os.Getenv("SLACK_REDIRECT_URI"), in.UserId, in.OrgId)
+	sres, err := slack.GetOAuthV2Response(http.DefaultClient, os.Getenv("SLACK_CLIENT_ID"), os.Getenv("SLACK_CLIENT_SECRET"), in.Code, redirect_uri)
 	if err != nil {
 		return err
 	}
@@ -155,7 +157,8 @@ func (h *slatomateHandler) AuthorizeOrganization(ctx context.Context, in *slatom
 	if err != nil {
 		return err
 	}
-	return nil
+	data, _ := oid.MarshalBinary()
+	return h.publisher.Publish(context.TODO(), &slatomatepb.Message{Header: map[string]string{"type": "ORG_AUTHORIZED"}, Body: data})
 }
 
 func validateOrganizationAccessWithContext(ctx context.Context, id uuid.UUID) (*entity.User, error) {
