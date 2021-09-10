@@ -117,7 +117,7 @@ func (h *slatomateHandler) ValidateOrgAccess(ctx context.Context, in *slatomatep
 	if err != nil {
 		return errors.BadRequest("AUTHORIZE_ORG", "Organization id is invalid!")
 	}
-	_, err = validateOrganizationAccess(ctx, oid)
+	_, err = validateOrganizationAccessWithContext(ctx, oid)
 	if err != nil {
 		return err
 	}
@@ -127,21 +127,24 @@ func (h *slatomateHandler) ValidateOrgAccess(ctx context.Context, in *slatomatep
 
 func (h *slatomateHandler) AuthorizeOrganization(ctx context.Context, in *slatomatepb.AuthorizeOrganizationRequest, out *emptypb.Empty) error {
 	logger.Debugf("Authorize Organization request: %v", in)
-	if len(in.OrgId) == 0 {
-		return errors.BadRequest("AUTHORIZE_ORG", "Organization id is required!")
+	if (len(in.OrgId) == 0 || len(in.Code) == 0 || len(in.UserId) == 0) && len(in.Error) == 0 {
+		return errors.BadRequest("AUTHORIZE_ORG", "Organization id, User id and code are required!")
 	}
-
+	userID, err := uuid.Parse(in.UserId)
+	if err != nil {
+		return errors.BadRequest("AUTHORIZE_ORG", "User id is invalid!")
+	}
 	oid, err := uuid.Parse(in.OrgId)
 	if err != nil {
 		return errors.BadRequest("AUTHORIZE_ORG", "Organization id is invalid!")
 	}
-	_, err = validateOrganizationAccess(ctx, oid)
+	user, err := h.userRepo.GetUser(&entity.User{ID: userID})
+	if err != nil {
+		return errors.NotFound("AUTHORIZE_ORG", "User not exists.")
+	}
+	err = validateOrganizationAccess(user, oid)
 	if err != nil {
 		return err
-	}
-
-	if len(in.Code) == 0 {
-		return errors.BadRequest("AUTHORIZE_ORG", "code is invalid!")
 	}
 
 	sres, err := slack.GetOAuthV2Response(http.DefaultClient, os.Getenv("SLACK_CLIENT_ID"), os.Getenv("SLACK_CLIENT_SECRET"), in.Code, os.Getenv("SLACK_REDIRECT_URI"))
@@ -155,14 +158,21 @@ func (h *slatomateHandler) AuthorizeOrganization(ctx context.Context, in *slatom
 	return nil
 }
 
-func validateOrganizationAccess(ctx context.Context, id uuid.UUID) (*entity.User, error) {
+func validateOrganizationAccessWithContext(ctx context.Context, id uuid.UUID) (*entity.User, error) {
 	user, ok := auth.AccountFromContext(ctx)
 	if !ok {
 		return user, errors.Unauthorized("VALIDATE_ORG_ACCESS", "Unauthorized access.")
 	}
 
-	if ok := user.HaveOrg(id); !ok {
-		return user, errors.Unauthorized("VALIDATE_ORG_ACCESS", "Unauthorized access to this organization.")
+	if err := validateOrganizationAccess(user, id); err != nil {
+		return user, err
 	}
 	return user, nil
+}
+
+func validateOrganizationAccess(user *entity.User, oid uuid.UUID) error {
+	if ok := user.HaveOrg(oid); !ok {
+		return errors.Unauthorized("VALIDATE_ORG_ACCESS", "Unauthorized access to this organization.")
+	}
+	return nil
 }
