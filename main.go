@@ -7,6 +7,7 @@ import (
 	"github.com/itzmanish/slatomate/internal/auth"
 	"github.com/itzmanish/slatomate/internal/db"
 	"github.com/itzmanish/slatomate/internal/repository"
+	"github.com/itzmanish/slatomate/internal/types"
 	"github.com/itzmanish/slatomate/subscriber"
 	"github.com/itzmanish/slatomate/wrapper"
 	"github.com/joho/godotenv"
@@ -15,8 +16,14 @@ import (
 )
 
 var (
-	SERVICE_NAME    = "github.itzmanish.service.slatomate"
-	SERVICE_VERSION = "0.1.0"
+	SERVICE_NAME                      = "github.itzmanish.service.slatomate"
+	SERVICE_VERSION                   = "0.1.0"
+	NoAuthEndpoint  types.ArrayString = []string{
+		"Slatomate.CreateUser",
+		"Slatomate.LoginUser",
+		"Slatomate.AuthorizeOrganization",
+		"Slatomate.Me",
+	}
 )
 
 func init() {
@@ -36,7 +43,7 @@ func main() {
 	service := micro.NewService(
 		micro.Name(SERVICE_NAME),
 		micro.Version(SERVICE_VERSION),
-		micro.WrapHandler(wrapper.AuthHandler(auth.NewAPIKeyAuth(repository.NewUserRepository(pdb)))),
+		micro.WrapHandler(wrapper.AuthHandler(auth.NewAPIKeyAuth(repository.NewUserRepository(pdb)), NoAuthEndpoint)),
 	)
 
 	// Initialise service

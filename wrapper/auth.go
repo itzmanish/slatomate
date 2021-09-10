@@ -8,27 +8,11 @@ import (
 	"github.com/itzmanish/go-micro/v2/metadata"
 	"github.com/itzmanish/go-micro/v2/server"
 	"github.com/itzmanish/slatomate/internal/auth"
+	"github.com/itzmanish/slatomate/internal/types"
 )
 
-type Array []string
-
-var NoAuthEndpoint Array = []string{
-	"Slatomate.Login",
-	"Slatomate.CreateUser",
-	"Slatomate.LoginUser",
-}
-
-func (arr Array) Has(value string) bool {
-	for _, v := range arr {
-		if v == value {
-			return true
-		}
-	}
-	return false
-}
-
 // AuthHandler wraps a server handler to perform auth
-func AuthHandler(a auth.Auth) server.HandlerWrapper {
+func AuthHandler(a auth.Auth, NoAuthEndpoint types.ArrayString) server.HandlerWrapper {
 	return func(h server.HandlerFunc) server.HandlerFunc {
 		return func(ctx context.Context, req server.Request, rsp interface{}) error {
 			// Check for debug endpoints which should be excluded from auth
