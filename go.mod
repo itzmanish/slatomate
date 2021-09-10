@@ -18,7 +18,7 @@ require (
 	github.com/joho/godotenv v1.3.0
 	github.com/manifoldco/promptui v0.8.0
 	github.com/mitchellh/mapstructure v1.4.1
-	github.com/olekukonko/tablewriter v0.0.1
+	github.com/olekukonko/tablewriter v0.0.4
 	github.com/robfig/cron/v3 v3.0.0
 	github.com/slack-go/slack v0.9.4
 	github.com/spf13/cobra v1.2.1
