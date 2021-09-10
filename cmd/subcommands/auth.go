@@ -84,6 +84,7 @@ func Whoami() {
 	u, err := api.APIClient.GetUser(ctx, &slatomate.GetUserRequest{ApiKey: auth_token}, client.WithAddress(viper.GetString("service_host")))
 	if err != nil {
 		color.Red("Got error: %s", err.Error())
+		return
 	}
 	color.Green("You are logged in as %s", u.Name)
 }
