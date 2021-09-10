@@ -2,7 +2,6 @@ package subcommands
 
 import (
 	"context"
-	"crypto/tls"
 	"errors"
 	"fmt"
 	"log"
@@ -13,9 +12,7 @@ import (
 	"github.com/briandowns/spinner"
 	"github.com/fatih/color"
 	"github.com/itzmanish/go-micro/v2/client"
-	"github.com/itzmanish/go-micro/v2/metadata"
 	"github.com/itzmanish/slatomate/cmd/api"
-	"github.com/itzmanish/slatomate/cmd/config"
 	"github.com/itzmanish/slatomate/cmd/utils"
 	"github.com/itzmanish/slatomate/proto/slatomate"
 	"github.com/olekukonko/tablewriter"
@@ -88,17 +85,35 @@ var orgAuthorizeCmd = &cobra.Command{
 	},
 }
 
+var orgSetCmd = &cobra.Command{
+	Use:   "set [org name]",
+	Short: "set an organization to work with",
+	Long:  `set an organization to work with`,
+	Args:  cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		setOrganization(args)
+	},
+}
+
+var orgCurrentCmd = &cobra.Command{
+	Use:   "current",
+	Short: "show current organization that you are working with",
+	Long:  `show current organization that you are working with`,
+	Run: func(cmd *cobra.Command, args []string) {
+		currentOrg()
+	},
+}
+
 func init() {
-	OrgCmd.AddCommand(orgListCmd, orgCreateCmd, orgGetCmd, orgDeleteCmd, orgAuthorizeCmd)
+	OrgCmd.AddCommand(orgListCmd, orgCreateCmd, orgGetCmd, orgDeleteCmd, orgAuthorizeCmd, orgSetCmd, orgCurrentCmd)
 }
 
 func listOrganization() {
-	auth_token, ok := viper.Get("auth_token").(string)
-	if !ok || len(auth_token) == 0 {
-		color.Red("You are not logged in.")
-		os.Exit(1)
+	ctx, err := GetAuthContext()
+	if err != nil {
+		color.Red("Error: %v", err)
+		return
 	}
-	ctx := metadata.Set(context.TODO(), "Authorization", ("APIKEY " + auth_token))
 	s := spinner.New(spinner.CharSets[4], 100*time.Millisecond)
 	s.Prefix = "Getting organizations "
 	s.Start()
@@ -128,12 +143,11 @@ func listOrganization() {
 
 func createOrganization(args []string) {
 	name := args[0]
-	auth_token, ok := viper.Get("auth_token").(string)
-	if !ok || len(auth_token) == 0 {
-		color.Red("You are not logged in.")
+	ctx, err := GetAuthContext()
+	if err != nil {
+		color.Red("Error: %v", err)
 		return
 	}
-	ctx := metadata.Set(context.TODO(), "Authorization", ("APIKEY " + auth_token))
 	s := spinner.New(spinner.CharSets[4], 100*time.Millisecond)
 	s.Prefix = fmt.Sprintf("Creating organization %s ", name)
 	s.Start()
@@ -150,12 +164,11 @@ func createOrganization(args []string) {
 
 func getOrganization(args []string) {
 	id := args[0]
-	auth_token, ok := viper.Get("auth_token").(string)
-	if !ok || len(auth_token) == 0 {
-		color.Red("You are not logged in.")
+	ctx, err := GetAuthContext()
+	if err != nil {
+		color.Red("Error: %v", err)
 		return
 	}
-	ctx := metadata.Set(context.TODO(), "Authorization", ("APIKEY " + auth_token))
 	s := spinner.New(spinner.CharSets[4], 100*time.Millisecond)
 	s.Prefix = fmt.Sprintf("Getting organization %s ", id)
 	s.Start()
@@ -170,16 +183,14 @@ func getOrganization(args []string) {
 
 func deleteOrganization(args []string) {
 	id := args[0]
-	auth_token, ok := viper.Get("auth_token").(string)
-	if !ok || len(auth_token) == 0 {
-		color.Red("You are not logged in.")
+	ctx, err := GetAuthContext()
+	if err != nil {
+		color.Red("Error: %v", err)
 		return
 	}
-	ctx := metadata.Set(context.TODO(), "Authorization", ("APIKEY " + auth_token))
 	s := spinner.New(spinner.CharSets[4], 100*time.Millisecond)
 	s.Prefix = fmt.Sprintf("Deleting organization %s ", id)
 	s.Start()
-	var err error
 	if id == "all" {
 		_, err = api.APIClient.DeleteAllOrganization(ctx, &emptypb.Empty{}, client.WithAddress(viper.GetString("service_host")))
 	} else {
@@ -195,7 +206,12 @@ func deleteOrganization(args []string) {
 
 func authorizeOrganization(args []string) {
 	id := args[0]
-	url := viper.GetString("oauth_url")
+	userID := viper.GetString("account.id")
+	if len(userID) == 0 {
+		color.Red("You are not logged in.")
+		return
+	}
+	url := viper.GetString("oauth_url") + fmt.Sprintf("&redirect_uri=https://localhost:8888/v1/oauth/slack/callback?user_id=%v&org_id=%v", userID, id)
 	err := utils.Openbrowser(url)
 
 	if err != nil {
@@ -208,12 +224,11 @@ func authorizeOrganization(args []string) {
 		color.Red("%v", err)
 		return
 	}
-	auth_token, ok := viper.Get("auth_token").(string)
-	if !ok || len(auth_token) == 0 {
-		color.Red("You are not logged in.")
+	ctx, err := GetAuthContext()
+	if err != nil {
+		color.Red("Error: %v", err)
 		return
 	}
-	ctx := metadata.Set(context.TODO(), "Authorization", ("APIKEY " + auth_token))
 	s := spinner.New(spinner.CharSets[4], 100*time.Millisecond)
 	s.Prefix = fmt.Sprintf("Authorizing organization %s ", id)
 	s.Start()
@@ -226,21 +241,50 @@ func authorizeOrganization(args []string) {
 	color.Green("\nOrganization authorised successfully.")
 }
 
+func setOrganization(args []string) {
+	orgName := args[0]
+	ctx, err := GetAuthContext()
+	if err != nil {
+		color.Red("Error: %v", err)
+		return
+	}
+	s := spinner.New(spinner.CharSets[4], 100*time.Millisecond)
+	s.Prefix = fmt.Sprintf("Getting organization %s ", orgName)
+	s.Start()
+	org, err := api.APIClient.GetOrganization(ctx, &slatomate.GetOrganizationRequest{Name: orgName}, client.WithAddress(viper.GetString("service_host")))
+	s.Stop()
+	if err != nil {
+		color.Red("\nUnable to set organization Error: %v", err)
+		return
+	}
+	viper.Set("org.name", org.Name)
+	viper.Set("org.id", org.Id)
+	err = viper.WriteConfig()
+	if err != nil {
+		color.Red("\nSaving config error: %v", err)
+		return
+	}
+	color.Green("\n%v is now your working organization.", org.Name)
+}
+
+func currentOrg() {
+	orgName := viper.GetString("org.name")
+	if len(orgName) == 0 {
+		color.Red("Current active orgnization is not set.")
+		return
+	}
+	color.Green("Your active orgnization is %v", orgName)
+}
+
 func startOauthResponseServer() (string, error) {
 	m := http.NewServeMux()
-	// Generate a key pair from your pem-encoded cert and key ([]byte).
-	cert, err := tls.X509KeyPair([]byte(config.CertFile), []byte(config.CertKey))
+	// Get a self signed certificate setting for server
+	serverTLS, _, err := utils.GetSelfSignedCerts()
+
 	if err != nil {
 		return "", err
 	}
-
-	// Construct a tls.config
-	tlsConfig := &tls.Config{
-		Certificates: []tls.Certificate{cert},
-		// Other options
-	}
-
-	s := &http.Server{Addr: ":8888", Handler: m, TLSConfig: tlsConfig}
+	s := &http.Server{Addr: ":8888", Handler: m, TLSConfig: serverTLS}
 
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()

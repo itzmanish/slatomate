@@ -68,16 +68,17 @@ func Login(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		return err
 	}
-	viper.Set("auth_token", user.ApiKey)
+	viper.Set("account.token", user.ApiKey)
+	viper.Set("account.id", user.Id)
 	viper.WriteConfig()
 	color.Green("Successfully logged in")
 	return nil
 }
 
 func Whoami() {
-	auth_token, ok := viper.Get("auth_token").(string)
-	if !ok || len(auth_token) == 0 {
-		color.Red("You are not logged in.")
+	auth_token, err := IsAuthorized()
+	if err != nil {
+		color.Red("Error: %v", err)
 		return
 	}
 	ctx := metadata.Set(context.TODO(), "Authorization", ("APIKEY " + auth_token))
@@ -87,4 +88,21 @@ func Whoami() {
 		return
 	}
 	color.Green("You are logged in as %s", u.Name)
+}
+
+func IsAuthorized() (string, error) {
+	auth_token := viper.GetString("account.token")
+	if len(auth_token) == 0 {
+		return "", errors.Unauthorized("UNAUTHORIZED", "You are not logged in.")
+
+	}
+	return auth_token, nil
+}
+
+func GetAuthContext() (context.Context, error) {
+	auth_token, err := IsAuthorized()
+	if err != nil {
+		return nil, err
+	}
+	return metadata.Set(context.TODO(), "Authorization", ("APIKEY " + auth_token)), nil
 }
