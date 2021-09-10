@@ -1,11 +1,7 @@
 package subcommands
 
 import (
-	"context"
-	"errors"
 	"fmt"
-	"log"
-	"net/http"
 	"net/url"
 	"os"
 	"time"
@@ -258,42 +254,4 @@ func currentOrg() {
 		return
 	}
 	color.Green("Your active orgnization is %v", orgName)
-}
-
-func startOauthResponseServer() (string, error) {
-	m := http.NewServeMux()
-	// Get a self signed certificate setting for server
-	serverTLS, _, err := utils.GetSelfSignedCerts()
-
-	if err != nil {
-		return "", err
-	}
-	s := &http.Server{Addr: ":8888", Handler: m, TLSConfig: serverTLS}
-
-	ctx, cancel := context.WithCancel(context.Background())
-	defer cancel()
-
-	var code string = ""
-	var error string = ""
-
-	m.HandleFunc("/v1/oauth/slack/callback", func(w http.ResponseWriter, r *http.Request) {
-		code = r.URL.Query().Get("code")
-		error = r.URL.Query().Get("error")
-		w.Write([]byte("Slatomate connected with your slack workspace! You can close this browser tab"))
-		cancel()
-	})
-
-	go func() {
-		if err := s.ListenAndServeTLS("", ""); err != nil && err != http.ErrServerClosed {
-			log.Fatal(err)
-		}
-	}()
-
-	<-ctx.Done()
-	s.Shutdown(ctx)
-	if len(error) != 0 {
-		return code, errors.New(error)
-	}
-
-	return code, nil
 }
