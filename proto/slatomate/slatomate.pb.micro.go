@@ -61,10 +61,101 @@ func NewSlatomateEndpoints() []*api.Endpoint {
 			Handler: "rpc",
 		},
 		&api.Endpoint{
+			Name:    "Slatomate.GetAllOrganization",
+			Path:    []string{"/v1/slatomate/orgs"},
+			Method:  []string{"GET"},
+			Handler: "rpc",
+		},
+		&api.Endpoint{
+			Name:    "Slatomate.GetOrganization",
+			Path:    []string{"/v1/slatomate/org/{id}"},
+			Method:  []string{"GET"},
+			Handler: "rpc",
+		},
+		&api.Endpoint{
+			Name:    "Slatomate.DeleteOrganization",
+			Path:    []string{"/v1/slatomate/org/{id}"},
+			Method:  []string{"DELETE"},
+			Body:    "",
+			Handler: "rpc",
+		},
+		&api.Endpoint{
+			Name:    "Slatomate.DeleteAllOrganization",
+			Path:    []string{"/v1/slatomate/orgs"},
+			Method:  []string{"DELETE"},
+			Body:    "",
+			Handler: "rpc",
+		},
+		&api.Endpoint{
+			Name:    "Slatomate.CreateUser",
+			Path:    []string{"/v1/slatomate/user"},
+			Method:  []string{"POST"},
+			Body:    "*",
+			Handler: "rpc",
+		},
+		&api.Endpoint{
+			Name:    "Slatomate.GetUser",
+			Path:    []string{"/v1/slatomate/user/{id}"},
+			Method:  []string{"GET"},
+			Handler: "rpc",
+		},
+		&api.Endpoint{
+			Name:    "Slatomate.DeleteUser",
+			Path:    []string{"/v1/slatomate/user/{id}"},
+			Method:  []string{"DELETE"},
+			Body:    "",
+			Handler: "rpc",
+		},
+		&api.Endpoint{
+			Name:    "Slatomate.UpdateUser",
+			Path:    []string{"/v1/slatomate/user/{id}"},
+			Method:  []string{"PATCH"},
+			Body:    "name",
+			Handler: "rpc",
+		},
+		&api.Endpoint{
 			Name:    "Slatomate.LoginUser",
 			Path:    []string{"/v1/slatomate/login"},
 			Method:  []string{"POST"},
 			Body:    "*",
+			Handler: "rpc",
+		},
+		&api.Endpoint{
+			Name:    "Slatomate.Me",
+			Path:    []string{"/v1/slatomate/user/me"},
+			Method:  []string{"GET"},
+			Handler: "rpc",
+		},
+		&api.Endpoint{
+			Name:    "Slatomate.GenerateAPIKey",
+			Path:    []string{"/v1/slatomate/user/api_key"},
+			Method:  []string{"GET"},
+			Handler: "rpc",
+		},
+		&api.Endpoint{
+			Name:    "Slatomate.CreateJob",
+			Path:    []string{"/v1/slatomate/org/{org_id}/job"},
+			Method:  []string{"POST"},
+			Body:    "*",
+			Handler: "rpc",
+		},
+		&api.Endpoint{
+			Name:    "Slatomate.GetJob",
+			Path:    []string{"/v1/slatomate/org/{org_id}/job/{id}{name}"},
+			Method:  []string{"GET"},
+			Handler: "rpc",
+		},
+		&api.Endpoint{
+			Name:    "Slatomate.DeleteJob",
+			Path:    []string{"/v1/slatomate/org/{org_id}/job/{id}"},
+			Method:  []string{"DELETE"},
+			Body:    "",
+			Handler: "rpc",
+		},
+		&api.Endpoint{
+			Name:    "Slatomate.GetAllJob",
+			Path:    []string{"/v1/slatomate/org/{org_id}/job/{id}"},
+			Method:  []string{"GET"},
 			Handler: "rpc",
 		},
 	}
@@ -373,10 +464,101 @@ func RegisterSlatomateHandler(s server.Server, hdlr SlatomateHandler, opts ...se
 		Handler: "rpc",
 	}))
 	opts = append(opts, api.WithEndpoint(&api.Endpoint{
+		Name:    "Slatomate.GetAllOrganization",
+		Path:    []string{"/v1/slatomate/orgs"},
+		Method:  []string{"GET"},
+		Handler: "rpc",
+	}))
+	opts = append(opts, api.WithEndpoint(&api.Endpoint{
+		Name:    "Slatomate.GetOrganization",
+		Path:    []string{"/v1/slatomate/org/{id}"},
+		Method:  []string{"GET"},
+		Handler: "rpc",
+	}))
+	opts = append(opts, api.WithEndpoint(&api.Endpoint{
+		Name:    "Slatomate.DeleteOrganization",
+		Path:    []string{"/v1/slatomate/org/{id}"},
+		Method:  []string{"DELETE"},
+		Body:    "",
+		Handler: "rpc",
+	}))
+	opts = append(opts, api.WithEndpoint(&api.Endpoint{
+		Name:    "Slatomate.DeleteAllOrganization",
+		Path:    []string{"/v1/slatomate/orgs"},
+		Method:  []string{"DELETE"},
+		Body:    "",
+		Handler: "rpc",
+	}))
+	opts = append(opts, api.WithEndpoint(&api.Endpoint{
+		Name:    "Slatomate.CreateUser",
+		Path:    []string{"/v1/slatomate/user"},
+		Method:  []string{"POST"},
+		Body:    "*",
+		Handler: "rpc",
+	}))
+	opts = append(opts, api.WithEndpoint(&api.Endpoint{
+		Name:    "Slatomate.GetUser",
+		Path:    []string{"/v1/slatomate/user/{id}"},
+		Method:  []string{"GET"},
+		Handler: "rpc",
+	}))
+	opts = append(opts, api.WithEndpoint(&api.Endpoint{
+		Name:    "Slatomate.DeleteUser",
+		Path:    []string{"/v1/slatomate/user/{id}"},
+		Method:  []string{"DELETE"},
+		Body:    "",
+		Handler: "rpc",
+	}))
+	opts = append(opts, api.WithEndpoint(&api.Endpoint{
+		Name:    "Slatomate.UpdateUser",
+		Path:    []string{"/v1/slatomate/user/{id}"},
+		Method:  []string{"PATCH"},
+		Body:    "name",
+		Handler: "rpc",
+	}))
+	opts = append(opts, api.WithEndpoint(&api.Endpoint{
 		Name:    "Slatomate.LoginUser",
 		Path:    []string{"/v1/slatomate/login"},
 		Method:  []string{"POST"},
 		Body:    "*",
+		Handler: "rpc",
+	}))
+	opts = append(opts, api.WithEndpoint(&api.Endpoint{
+		Name:    "Slatomate.Me",
+		Path:    []string{"/v1/slatomate/user/me"},
+		Method:  []string{"GET"},
+		Handler: "rpc",
+	}))
+	opts = append(opts, api.WithEndpoint(&api.Endpoint{
+		Name:    "Slatomate.GenerateAPIKey",
+		Path:    []string{"/v1/slatomate/user/api_key"},
+		Method:  []string{"GET"},
+		Handler: "rpc",
+	}))
+	opts = append(opts, api.WithEndpoint(&api.Endpoint{
+		Name:    "Slatomate.CreateJob",
+		Path:    []string{"/v1/slatomate/org/{org_id}/job"},
+		Method:  []string{"POST"},
+		Body:    "*",
+		Handler: "rpc",
+	}))
+	opts = append(opts, api.WithEndpoint(&api.Endpoint{
+		Name:    "Slatomate.GetJob",
+		Path:    []string{"/v1/slatomate/org/{org_id}/job/{id}{name}"},
+		Method:  []string{"GET"},
+		Handler: "rpc",
+	}))
+	opts = append(opts, api.WithEndpoint(&api.Endpoint{
+		Name:    "Slatomate.DeleteJob",
+		Path:    []string{"/v1/slatomate/org/{org_id}/job/{id}"},
+		Method:  []string{"DELETE"},
+		Body:    "",
+		Handler: "rpc",
+	}))
+	opts = append(opts, api.WithEndpoint(&api.Endpoint{
+		Name:    "Slatomate.GetAllJob",
+		Path:    []string{"/v1/slatomate/org/{org_id}/job/{id}"},
+		Method:  []string{"GET"},
 		Handler: "rpc",
 	}))
 	return s.Handle(s.NewHandler(&Slatomate{h}, opts...))

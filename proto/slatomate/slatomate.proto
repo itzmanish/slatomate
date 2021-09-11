@@ -34,30 +34,83 @@ service Slatomate {
 			get : "/v1/slatomate/org/{id}"
 		};
 	};
-	rpc DeleteOrganization (DeleteOrganizationRequest) returns (google.protobuf.Empty) {};
-	rpc DeleteAllOrganization (google.protobuf.Empty) returns (google.protobuf.Empty) {};
+	rpc DeleteOrganization (DeleteOrganizationRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = {
+			delete : "/v1/slatomate/org/{id}"
+		};
+	};
+	rpc DeleteAllOrganization (google.protobuf.Empty) returns (google.protobuf.Empty) {
+		option (google.api.http) = {
+			delete : "/v1/slatomate/orgs"
+		};
+	};
 
-	rpc CreateUser (CreateUserRequest) returns (User) {};
-	rpc GetUser (GetUserRequest) returns (User) {};
-	rpc DeleteUser (DeleteUserRequest) returns (google.protobuf.Empty) {};
-	rpc UpdateUser (UpdateUserRequest) returns (User) {};
+	rpc CreateUser (CreateUserRequest) returns (User) {
+		option (google.api.http) = {
+			post : "/v1/slatomate/user",
+			body : "*"
+		      };
+	};
+	rpc GetUser (GetUserRequest) returns (User) {
+		option (google.api.http) = {
+			get : "/v1/slatomate/user/{id}",
+		      };
+	};
+	rpc DeleteUser (DeleteUserRequest) returns (google.protobuf.Empty) {
+		option (google.api.http) = {
+			delete : "/v1/slatomate/user/{id}"
+		};
+	};
+	rpc UpdateUser (UpdateUserRequest) returns (User) {
+		option (google.api.http) = {
+			patch : "/v1/slatomate/user/{id}",
+			body : "name"
+		      };
+	};
 	rpc LoginUser (User) returns (User){
 		option (google.api.http) = {
 			post : "/v1/slatomate/login",
 			body : "*"
 		      };
 	};
-	rpc Me (APIKeyRequest) returns (User) {};
+	rpc Me (APIKeyRequest) returns (User) {
+		option (google.api.http) = {
+			get : "/v1/slatomate/user/me",
+		      };
+	};
 	// Not for now
-	rpc GenerateAPIKey (GenerateAPIKeyRequest) returns (GenerateAPIKeyResponse) {};
+	rpc GenerateAPIKey (GenerateAPIKeyRequest) returns (GenerateAPIKeyResponse) {
+		option (google.api.http) = {
+			get : "/v1/slatomate/user/api_key",
+		      };
+	};
 	// Admin only
-	rpc GetAllUser (google.protobuf.Empty) returns (GetAllUserResponse) {};
+	rpc GetAllUser (google.protobuf.Empty) returns (GetAllUserResponse) {
+
+	};
 
 	// Jobs
-	rpc CreateJob (Job) returns (Job){};
-	rpc GetJob (GetJobRequest) returns (Job){};
-	rpc DeleteJob (DeleteJobRequest) returns (google.protobuf.Empty){};
-	rpc GetAllJob (GetAllJobRequset) returns (GetAllJobResponse){};
+	rpc CreateJob (Job) returns (Job){
+		option (google.api.http) = {
+			post : "/v1/slatomate/org/{org_id}/job",
+			body : "*"
+		      };
+	};
+	rpc GetJob (GetJobRequest) returns (Job){
+		option (google.api.http) = {
+			get : "/v1/slatomate/org/{org_id}/job/{id}{name}",
+		      };
+	};
+	rpc DeleteJob (DeleteJobRequest) returns (google.protobuf.Empty){
+		option (google.api.http) = {
+			delete : "/v1/slatomate/org/{org_id}/job/{id}",
+		      };
+	};
+	rpc GetAllJob (GetAllJobRequset) returns (GetAllJobResponse){
+		option (google.api.http) = {
+			get : "/v1/slatomate/org/{org_id}/job/{id}",
+		      };
+	};
 }
 
 message Message {
