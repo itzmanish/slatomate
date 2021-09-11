@@ -5,8 +5,8 @@ package slatomate
 
 import (
 	fmt "fmt"
-	proto "github.com/golang/protobuf/proto"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	proto "google.golang.org/protobuf/proto"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	math "math"
@@ -24,12 +24,6 @@ var _ = proto.Marshal
 var _ = fmt.Errorf
 var _ = math.Inf
 
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the proto package it is being compiled against.
-// A compilation error at this line likely means your copy of the
-// proto package needs to be updated.
-const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
-
 // Reference imports to suppress errors if they are not otherwise used.
 var _ api.Endpoint
 var _ context.Context
@@ -40,119 +34,119 @@ var _ server.Option
 
 func NewSlatomateEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{
-		&api.Endpoint{
+		{
 			Name:    "Slatomate.CreateOrganization",
 			Path:    []string{"/v1/slatomate/org"},
 			Method:  []string{"POST"},
 			Body:    "*",
 			Handler: "rpc",
 		},
-		&api.Endpoint{
+		{
 			Name:    "Slatomate.AuthorizeOrganization",
 			Path:    []string{"/v1/slatomate/org/authorize"},
 			Method:  []string{"GET"},
 			Handler: "rpc",
 		},
-		&api.Endpoint{
+		{
 			Name:    "Slatomate.ValidateOrgAccess",
 			Path:    []string{"/v1/slatomate/org/{org_id}"},
 			Method:  []string{"POST"},
 			Body:    "",
 			Handler: "rpc",
 		},
-		&api.Endpoint{
+		{
 			Name:    "Slatomate.GetAllOrganization",
 			Path:    []string{"/v1/slatomate/orgs"},
 			Method:  []string{"GET"},
 			Handler: "rpc",
 		},
-		&api.Endpoint{
+		{
 			Name:    "Slatomate.GetOrganization",
 			Path:    []string{"/v1/slatomate/org/{id}"},
 			Method:  []string{"GET"},
 			Handler: "rpc",
 		},
-		&api.Endpoint{
+		{
 			Name:    "Slatomate.DeleteOrganization",
 			Path:    []string{"/v1/slatomate/org/{id}"},
 			Method:  []string{"DELETE"},
 			Body:    "",
 			Handler: "rpc",
 		},
-		&api.Endpoint{
+		{
 			Name:    "Slatomate.DeleteAllOrganization",
 			Path:    []string{"/v1/slatomate/orgs"},
 			Method:  []string{"DELETE"},
 			Body:    "",
 			Handler: "rpc",
 		},
-		&api.Endpoint{
+		{
 			Name:    "Slatomate.CreateUser",
 			Path:    []string{"/v1/slatomate/user"},
 			Method:  []string{"POST"},
 			Body:    "*",
 			Handler: "rpc",
 		},
-		&api.Endpoint{
+		{
 			Name:    "Slatomate.GetUser",
 			Path:    []string{"/v1/slatomate/user/{id}"},
 			Method:  []string{"GET"},
 			Handler: "rpc",
 		},
-		&api.Endpoint{
+		{
 			Name:    "Slatomate.DeleteUser",
 			Path:    []string{"/v1/slatomate/user/{id}"},
 			Method:  []string{"DELETE"},
 			Body:    "",
 			Handler: "rpc",
 		},
-		&api.Endpoint{
+		{
 			Name:    "Slatomate.UpdateUser",
 			Path:    []string{"/v1/slatomate/user/{id}"},
 			Method:  []string{"PATCH"},
 			Body:    "name",
 			Handler: "rpc",
 		},
-		&api.Endpoint{
+		{
 			Name:    "Slatomate.LoginUser",
 			Path:    []string{"/v1/slatomate/login"},
 			Method:  []string{"POST"},
 			Body:    "*",
 			Handler: "rpc",
 		},
-		&api.Endpoint{
+		{
 			Name:    "Slatomate.Me",
 			Path:    []string{"/v1/slatomate/user/me"},
 			Method:  []string{"GET"},
 			Handler: "rpc",
 		},
-		&api.Endpoint{
+		{
 			Name:    "Slatomate.GenerateAPIKey",
 			Path:    []string{"/v1/slatomate/user/api_key"},
 			Method:  []string{"GET"},
 			Handler: "rpc",
 		},
-		&api.Endpoint{
+		{
 			Name:    "Slatomate.CreateJob",
 			Path:    []string{"/v1/slatomate/org/{org_id}/job"},
 			Method:  []string{"POST"},
 			Body:    "*",
 			Handler: "rpc",
 		},
-		&api.Endpoint{
+		{
 			Name:    "Slatomate.GetJob",
 			Path:    []string{"/v1/slatomate/org/{org_id}/job/{id}{name}"},
 			Method:  []string{"GET"},
 			Handler: "rpc",
 		},
-		&api.Endpoint{
+		{
 			Name:    "Slatomate.DeleteJob",
 			Path:    []string{"/v1/slatomate/org/{org_id}/job/{id}"},
 			Method:  []string{"DELETE"},
 			Body:    "",
 			Handler: "rpc",
 		},
-		&api.Endpoint{
+		{
 			Name:    "Slatomate.GetAllJob",
 			Path:    []string{"/v1/slatomate/org/{org_id}/job/{id}"},
 			Method:  []string{"GET"},
