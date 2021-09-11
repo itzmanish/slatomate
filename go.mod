@@ -12,9 +12,7 @@ replace (
 require (
 	github.com/briandowns/spinner v1.16.0
 	github.com/fatih/color v1.12.0
-	github.com/golang/protobuf v1.5.2
 	github.com/google/uuid v1.3.0
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.6.0 // indirect
 	github.com/itzmanish/go-micro/v2 v2.10.1
 	github.com/joho/godotenv v1.3.0
 	github.com/manifoldco/promptui v0.8.0
