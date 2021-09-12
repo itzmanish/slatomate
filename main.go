@@ -27,6 +27,7 @@ var (
 		"Slatomate.LoginUser",
 		"Slatomate.AuthorizeOrganization",
 		"Slatomate.Me",
+		"Slatomate.Health",
 	}
 )
 

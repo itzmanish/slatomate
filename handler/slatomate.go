@@ -4,14 +4,16 @@ import (
 	"context"
 
 	"github.com/itzmanish/go-micro/v2"
+	"github.com/itzmanish/go-micro/v2/logger"
 	"github.com/itzmanish/slatomate/internal/repository"
 	slatomatepb "github.com/itzmanish/slatomate/proto/slatomate"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type SlatomateHandler interface {
+	Health(context.Context, *emptypb.Empty, *slatomatepb.HealthResponse) error
 	CreateOrganization(context.Context, *slatomatepb.CreateOrganizationRequest, *slatomatepb.Organization) error
-	AuthorizeOrganization(ctx context.Context, in *slatomatepb.AuthorizeOrganizationRequest, out *emptypb.Empty) error
+	AuthorizeOrganization(ctx context.Context, in *slatomatepb.AuthorizeOrganizationRequest, out *slatomatepb.GenericResponse) error
 	ValidateOrgAccess(ctx context.Context, in *slatomatepb.ValidateOrgAccessRequest, out *slatomatepb.ValidateOrgAccessResponse) error
 	DeleteAllOrganization(context.Context, *emptypb.Empty, *emptypb.Empty) error
 	GetAllOrganization(context.Context, *slatomatepb.GetAllOrganizationRequest, *slatomatepb.GetAllOrganizationResponse) error
@@ -42,4 +44,11 @@ type slatomateHandler struct {
 
 func NewHandler(userRepo repository.UserRepository, orgRepo repository.OrganizationRepository, jobRepo repository.JobRepository, event micro.Event) SlatomateHandler {
 	return &slatomateHandler{userRepo, orgRepo, jobRepo, event}
+}
+
+func (s *slatomateHandler) Health(ctx context.Context, in *emptypb.Empty, out *slatomatepb.HealthResponse) error {
+	logger.Debug("Health request")
+	out.Status = "up"
+	out.Version = "v1.0.1"
+	return nil
 }

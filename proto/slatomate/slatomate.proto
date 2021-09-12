@@ -8,13 +8,20 @@ import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
 
 service Slatomate {
+
+	rpc Health(google.protobuf.Empty) returns (HealthResponse) {
+		option (google.api.http) = {
+			get : "/v1/slatomate/health",
+		      };
+	};
+
 	rpc CreateOrganization (CreateOrganizationRequest) returns (Organization) {
 		option (google.api.http) = {
 			post : "/v1/slatomate/org",
 			body : "*"
 		      };
 	};
-	rpc AuthorizeOrganization (AuthorizeOrganizationRequest) returns (google.protobuf.Empty){
+	rpc AuthorizeOrganization (AuthorizeOrganizationRequest) returns (GenericResponse){
 		option (google.api.http) = {
 			get : "/v1/slatomate/org/authorize"
 		};
@@ -118,6 +125,15 @@ message Message {
 	bytes body = 2;
 }
 
+message GenericResponse {
+	bool success = 1;
+	string error = 2;
+}
+
+message HealthResponse {
+	string status = 1;
+	string version = 2;
+}
 
 // =========== Organization message definition ====================
 

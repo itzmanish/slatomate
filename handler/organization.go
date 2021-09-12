@@ -126,7 +126,7 @@ func (h *slatomateHandler) ValidateOrgAccess(ctx context.Context, in *slatomatep
 	return nil
 }
 
-func (h *slatomateHandler) AuthorizeOrganization(ctx context.Context, in *slatomatepb.AuthorizeOrganizationRequest, out *emptypb.Empty) error {
+func (h *slatomateHandler) AuthorizeOrganization(ctx context.Context, in *slatomatepb.AuthorizeOrganizationRequest, out *slatomatepb.GenericResponse) error {
 	logger.Debugf("Authorize Organization request: %v", in)
 	if (len(in.OrgId) == 0 || len(in.Code) == 0 || len(in.UserId) == 0) && len(in.Error) == 0 {
 		return errors.BadRequest("AUTHORIZE_ORG", "Organization id, User id and code are required!")
@@ -161,7 +161,14 @@ func (h *slatomateHandler) AuthorizeOrganization(ctx context.Context, in *slatom
 		return err
 	}
 	data, _ := oid.MarshalBinary()
-	return h.publisher.Publish(context.TODO(), &slatomatepb.Message{Header: map[string]string{"type": "ORG_AUTHORIZED"}, Body: data})
+	err = h.publisher.Publish(context.TODO(), &slatomatepb.Message{Header: map[string]string{"type": "ORG_AUTHORIZED"}, Body: data})
+	if err != nil {
+		return err
+	}
+	*out = slatomatepb.GenericResponse{
+		Success: true,
+	}
+	return nil
 }
 
 func validateOrganizationAccessWithContext(ctx context.Context, id uuid.UUID) (*entity.User, error) {

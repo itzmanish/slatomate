@@ -35,6 +35,12 @@ var _ server.Option
 func NewSlatomateEndpoints() []*api.Endpoint {
 	return []*api.Endpoint{
 		{
+			Name:    "Slatomate.Health",
+			Path:    []string{"/v1/slatomate/health"},
+			Method:  []string{"GET"},
+			Handler: "rpc",
+		},
+		{
 			Name:    "Slatomate.CreateOrganization",
 			Path:    []string{"/v1/slatomate/org"},
 			Method:  []string{"POST"},
@@ -157,8 +163,9 @@ func NewSlatomateEndpoints() []*api.Endpoint {
 // Client API for Slatomate service
 
 type SlatomateService interface {
+	Health(ctx context.Context, in *emptypb.Empty, opts ...client.CallOption) (*HealthResponse, error)
 	CreateOrganization(ctx context.Context, in *CreateOrganizationRequest, opts ...client.CallOption) (*Organization, error)
-	AuthorizeOrganization(ctx context.Context, in *AuthorizeOrganizationRequest, opts ...client.CallOption) (*emptypb.Empty, error)
+	AuthorizeOrganization(ctx context.Context, in *AuthorizeOrganizationRequest, opts ...client.CallOption) (*GenericResponse, error)
 	ValidateOrgAccess(ctx context.Context, in *ValidateOrgAccessRequest, opts ...client.CallOption) (*ValidateOrgAccessResponse, error)
 	GetAllOrganization(ctx context.Context, in *GetAllOrganizationRequest, opts ...client.CallOption) (*GetAllOrganizationResponse, error)
 	GetOrganization(ctx context.Context, in *GetOrganizationRequest, opts ...client.CallOption) (*Organization, error)
@@ -193,6 +200,16 @@ func NewSlatomateService(name string, c client.Client) SlatomateService {
 	}
 }
 
+func (c *slatomateService) Health(ctx context.Context, in *emptypb.Empty, opts ...client.CallOption) (*HealthResponse, error) {
+	req := c.c.NewRequest(c.name, "Slatomate.Health", in)
+	out := new(HealthResponse)
+	err := c.c.Call(ctx, req, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *slatomateService) CreateOrganization(ctx context.Context, in *CreateOrganizationRequest, opts ...client.CallOption) (*Organization, error) {
 	req := c.c.NewRequest(c.name, "Slatomate.CreateOrganization", in)
 	out := new(Organization)
@@ -203,9 +220,9 @@ func (c *slatomateService) CreateOrganization(ctx context.Context, in *CreateOrg
 	return out, nil
 }
 
-func (c *slatomateService) AuthorizeOrganization(ctx context.Context, in *AuthorizeOrganizationRequest, opts ...client.CallOption) (*emptypb.Empty, error) {
+func (c *slatomateService) AuthorizeOrganization(ctx context.Context, in *AuthorizeOrganizationRequest, opts ...client.CallOption) (*GenericResponse, error) {
 	req := c.c.NewRequest(c.name, "Slatomate.AuthorizeOrganization", in)
-	out := new(emptypb.Empty)
+	out := new(GenericResponse)
 	err := c.c.Call(ctx, req, out, opts...)
 	if err != nil {
 		return nil, err
@@ -386,8 +403,9 @@ func (c *slatomateService) GetAllJob(ctx context.Context, in *GetAllJobRequset, 
 // Server API for Slatomate service
 
 type SlatomateHandler interface {
+	Health(context.Context, *emptypb.Empty, *HealthResponse) error
 	CreateOrganization(context.Context, *CreateOrganizationRequest, *Organization) error
-	AuthorizeOrganization(context.Context, *AuthorizeOrganizationRequest, *emptypb.Empty) error
+	AuthorizeOrganization(context.Context, *AuthorizeOrganizationRequest, *GenericResponse) error
 	ValidateOrgAccess(context.Context, *ValidateOrgAccessRequest, *ValidateOrgAccessResponse) error
 	GetAllOrganization(context.Context, *GetAllOrganizationRequest, *GetAllOrganizationResponse) error
 	GetOrganization(context.Context, *GetOrganizationRequest, *Organization) error
@@ -412,8 +430,9 @@ type SlatomateHandler interface {
 
 func RegisterSlatomateHandler(s server.Server, hdlr SlatomateHandler, opts ...server.HandlerOption) error {
 	type slatomate interface {
+		Health(ctx context.Context, in *emptypb.Empty, out *HealthResponse) error
 		CreateOrganization(ctx context.Context, in *CreateOrganizationRequest, out *Organization) error
-		AuthorizeOrganization(ctx context.Context, in *AuthorizeOrganizationRequest, out *emptypb.Empty) error
+		AuthorizeOrganization(ctx context.Context, in *AuthorizeOrganizationRequest, out *GenericResponse) error
 		ValidateOrgAccess(ctx context.Context, in *ValidateOrgAccessRequest, out *ValidateOrgAccessResponse) error
 		GetAllOrganization(ctx context.Context, in *GetAllOrganizationRequest, out *GetAllOrganizationResponse) error
 		GetOrganization(ctx context.Context, in *GetOrganizationRequest, out *Organization) error
@@ -436,6 +455,12 @@ func RegisterSlatomateHandler(s server.Server, hdlr SlatomateHandler, opts ...se
 		slatomate
 	}
 	h := &slatomateHandler{hdlr}
+	opts = append(opts, api.WithEndpoint(&api.Endpoint{
+		Name:    "Slatomate.Health",
+		Path:    []string{"/v1/slatomate/health"},
+		Method:  []string{"GET"},
+		Handler: "rpc",
+	}))
 	opts = append(opts, api.WithEndpoint(&api.Endpoint{
 		Name:    "Slatomate.CreateOrganization",
 		Path:    []string{"/v1/slatomate/org"},
@@ -560,11 +585,15 @@ type slatomateHandler struct {
 	SlatomateHandler
 }
 
+func (h *slatomateHandler) Health(ctx context.Context, in *emptypb.Empty, out *HealthResponse) error {
+	return h.SlatomateHandler.Health(ctx, in, out)
+}
+
 func (h *slatomateHandler) CreateOrganization(ctx context.Context, in *CreateOrganizationRequest, out *Organization) error {
 	return h.SlatomateHandler.CreateOrganization(ctx, in, out)
 }
 
-func (h *slatomateHandler) AuthorizeOrganization(ctx context.Context, in *AuthorizeOrganizationRequest, out *emptypb.Empty) error {
+func (h *slatomateHandler) AuthorizeOrganization(ctx context.Context, in *AuthorizeOrganizationRequest, out *GenericResponse) error {
 	return h.SlatomateHandler.AuthorizeOrganization(ctx, in, out)
 }
 
