@@ -1,6 +1,9 @@
 package main
 
 import (
+	"os"
+
+	"github.com/itzmanish/go-micro-plugins/wrapper/trace/opentracing/v2"
 	"github.com/itzmanish/go-micro/v2"
 	log "github.com/itzmanish/go-micro/v2/logger"
 	"github.com/itzmanish/slatomate/handler"
@@ -9,6 +12,7 @@ import (
 	"github.com/itzmanish/slatomate/internal/repository"
 	"github.com/itzmanish/slatomate/internal/types"
 	"github.com/itzmanish/slatomate/subscriber"
+	"github.com/itzmanish/slatomate/utils"
 	"github.com/itzmanish/slatomate/wrapper"
 	"github.com/joho/godotenv"
 
@@ -39,11 +43,18 @@ func main() {
 		log.Fatal(err)
 	}
 
+	tracer, closer, err := utils.InitTracer(SERVICE_NAME, os.Getenv("JAEGER_AGENT_HOST"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer closer.Close()
+
 	// New Service
 	service := micro.NewService(
 		micro.Name(SERVICE_NAME),
 		micro.Version(SERVICE_VERSION),
 		micro.WrapHandler(wrapper.AuthHandler(auth.NewAPIKeyAuth(repository.NewUserRepository(pdb)), NoAuthEndpoint)),
+		micro.WrapHandler(opentracing.NewHandlerWrapper(tracer)),
 	)
 
 	// Initialise service

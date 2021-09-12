@@ -49,9 +49,8 @@ func NewSlatomateEndpoints() []*api.Endpoint {
 		},
 		{
 			Name:    "Slatomate.ValidateOrgAccess",
-			Path:    []string{"/v1/slatomate/org/{org_id}"},
-			Method:  []string{"POST"},
-			Body:    "",
+			Path:    []string{"/v1/slatomate/org/{org_id}/authorized"},
+			Method:  []string{"GET"},
 			Handler: "rpc",
 		},
 		{
@@ -452,9 +451,8 @@ func RegisterSlatomateHandler(s server.Server, hdlr SlatomateHandler, opts ...se
 	}))
 	opts = append(opts, api.WithEndpoint(&api.Endpoint{
 		Name:    "Slatomate.ValidateOrgAccess",
-		Path:    []string{"/v1/slatomate/org/{org_id}"},
-		Method:  []string{"POST"},
-		Body:    "",
+		Path:    []string{"/v1/slatomate/org/{org_id}/authorized"},
+		Method:  []string{"GET"},
 		Handler: "rpc",
 	}))
 	opts = append(opts, api.WithEndpoint(&api.Endpoint{

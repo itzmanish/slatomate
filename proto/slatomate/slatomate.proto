@@ -21,7 +21,7 @@ service Slatomate {
 	};
 	rpc ValidateOrgAccess (ValidateOrgAccessRequest) returns (ValidateOrgAccessResponse){
 		option (google.api.http) = {
-			post : "/v1/slatomate/org/{org_id}",
+			get : "/v1/slatomate/org/{org_id}/authorized",
 		      };
 	};
 	rpc GetAllOrganization (GetAllOrganizationRequest) returns (GetAllOrganizationResponse) {
