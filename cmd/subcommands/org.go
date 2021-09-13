@@ -155,8 +155,7 @@ func createOrganization(args []string) {
 		return
 	}
 	color.Green("\nOrg created: %v\n", org)
-	authorizeOrganization([]string{org.Id})
-	// color.Green("Now authorize this organization to integrate with slack. To do so execute slatomate org authorize %v", org.Id)
+	color.Green("Now authorize this organization to integrate with slack. To do so execute slatomate org authorize %v", org.Id)
 }
 
 func getOrganization(args []string) {
@@ -208,7 +207,7 @@ func authorizeOrganization(args []string) {
 		color.Red("You are not logged in.")
 		return
 	}
-	redirect_uri := fmt.Sprintf("https://localhost:8080/slatomate/authorizeOrganization?user_id=%v&org_id=%v", userID, id)
+	redirect_uri := fmt.Sprintf("https://localhost:8080/v1/slatomate/org/authorize?user_id=%v&org_id=%v", userID, id)
 
 	uri := viper.GetString("oauth_url") + "&redirect_uri=" + url.QueryEscape(redirect_uri)
 	err := utils.Openbrowser(uri)
