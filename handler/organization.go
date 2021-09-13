@@ -167,6 +167,7 @@ func (h *slatomateHandler) AuthorizeOrganization(ctx context.Context, in *slatom
 	}
 	*out = slatomatepb.GenericResponse{
 		Success: true,
+		Message: "Successfully installed slatomate in your workspace.",
 	}
 	return nil
 }

@@ -128,6 +128,7 @@ message Message {
 message GenericResponse {
 	bool success = 1;
 	string error = 2;
+	string message = 3;
 }
 
 message HealthResponse {
