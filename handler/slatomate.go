@@ -6,7 +6,7 @@ import (
 	"github.com/itzmanish/go-micro/v2"
 	"github.com/itzmanish/go-micro/v2/logger"
 	"github.com/itzmanish/slatomate/internal/repository"
-	slatomatepb "github.com/itzmanish/slatomate/proto/slatomate"
+	slatomatepb "github.com/itzmanish/slatomate/proto/slatomate/v1"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 

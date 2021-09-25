@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/itzmanish/slatomate/proto/slatomate"
+	slatomate "github.com/itzmanish/slatomate/proto/slatomate/v1"
 	"github.com/itzmanish/slatomate/utils"
 	"gorm.io/gorm"
 )

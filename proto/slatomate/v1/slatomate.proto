@@ -1,14 +1,13 @@
 syntax = "proto3";
 
-package github.itzmanish.service.slatomate;
-option go_package="proto/slatomate";
+package slatomate.v1;
+option go_package="proto/slatomate/v1";
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
 
-service Slatomate {
-
+service SlatomateService {
 	rpc Health(google.protobuf.Empty) returns (HealthResponse) {
 		option (google.api.http) = {
 			get : "/v1/slatomate/health",
@@ -21,6 +20,7 @@ service Slatomate {
 			body : "*"
 		      };
 	};
+	
 	rpc AuthorizeOrganization (AuthorizeOrganizationRequest) returns (GenericResponse){
 		option (google.api.http) = {
 			get : "/v1/slatomate/org/authorize"
@@ -275,6 +275,6 @@ message Job {
 }
 
 enum Task {
-	DEFAULT = 0;
-	STATUS_UPDATE = 1;
+	TASK_UNSPECIFIED = 0;
+	TASK_STATUS_UPDATE = 1;
 }

@@ -16,7 +16,7 @@ import (
 	"github.com/itzmanish/slatomate/wrapper"
 	"github.com/joho/godotenv"
 
-	slatomate "github.com/itzmanish/slatomate/proto/slatomate"
+	slatomate "github.com/itzmanish/slatomate/proto/slatomate/v1"
 )
 
 var (
@@ -62,7 +62,7 @@ func main() {
 	service.Init()
 
 	// Register Handler
-	slatomate.RegisterSlatomateHandler(service.Server(),
+	slatomate.RegisterSlatomateServiceHandler(service.Server(),
 		handler.NewHandler(repository.NewUserRepository(pdb),
 			repository.NewOrganizationRepository(pdb),
 			repository.NewJobRepository(pdb), micro.NewEvent(SERVICE_NAME, service.Client())))

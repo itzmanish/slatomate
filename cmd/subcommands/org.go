@@ -11,7 +11,7 @@ import (
 	"github.com/itzmanish/go-micro/v2/client"
 	"github.com/itzmanish/slatomate/cmd/api"
 	"github.com/itzmanish/slatomate/cmd/utils"
-	"github.com/itzmanish/slatomate/proto/slatomate"
+	v1 "github.com/itzmanish/slatomate/proto/slatomate/v1"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -114,7 +114,7 @@ func listOrganization() {
 	s := spinner.New(spinner.CharSets[4], 100*time.Millisecond)
 	s.Prefix = "Getting organizations "
 	s.Start()
-	orgs, err := api.APIClient.GetAllOrganization(ctx, &slatomate.GetAllOrganizationRequest{}, client.WithAddress(viper.GetString("service_host")))
+	orgs, err := api.APIClient.GetAllOrganization(ctx, &v1.GetAllOrganizationRequest{}, client.WithAddress(viper.GetString("service_host")))
 	s.Stop()
 	if err != nil {
 		color.Red("\n%v", err)
@@ -148,7 +148,7 @@ func createOrganization(args []string) {
 	s := spinner.New(spinner.CharSets[4], 100*time.Millisecond)
 	s.Prefix = fmt.Sprintf("Creating organization %s ", name)
 	s.Start()
-	org, err := api.APIClient.CreateOrganization(ctx, &slatomate.CreateOrganizationRequest{Name: name}, client.WithAddress(viper.GetString("service_host")))
+	org, err := api.APIClient.CreateOrganization(ctx, &v1.CreateOrganizationRequest{Name: name}, client.WithAddress(viper.GetString("service_host")))
 	s.Stop()
 	if err != nil {
 		color.Red("\n%v", err)
@@ -168,7 +168,7 @@ func getOrganization(args []string) {
 	s := spinner.New(spinner.CharSets[4], 100*time.Millisecond)
 	s.Prefix = fmt.Sprintf("Getting organization %s ", id)
 	s.Start()
-	org, err := api.APIClient.GetOrganization(ctx, &slatomate.GetOrganizationRequest{Id: id}, client.WithAddress(viper.GetString("service_host")))
+	org, err := api.APIClient.GetOrganization(ctx, &v1.GetOrganizationRequest{Id: id}, client.WithAddress(viper.GetString("service_host")))
 	s.Stop()
 	if err != nil {
 		color.Red("\n%v", err)
@@ -190,7 +190,7 @@ func deleteOrganization(args []string) {
 	if id == "all" {
 		_, err = api.APIClient.DeleteAllOrganization(ctx, &emptypb.Empty{}, client.WithAddress(viper.GetString("service_host")))
 	} else {
-		_, err = api.APIClient.DeleteOrganization(ctx, &slatomate.DeleteOrganizationRequest{Id: id}, client.WithAddress(viper.GetString("service_host")))
+		_, err = api.APIClient.DeleteOrganization(ctx, &v1.DeleteOrganizationRequest{Id: id}, client.WithAddress(viper.GetString("service_host")))
 	}
 	s.Stop()
 	if err != nil {
@@ -230,7 +230,7 @@ func setOrganization(args []string) {
 	s := spinner.New(spinner.CharSets[4], 100*time.Millisecond)
 	s.Prefix = fmt.Sprintf("Getting organization %s ", orgName)
 	s.Start()
-	org, err := api.APIClient.GetOrganization(ctx, &slatomate.GetOrganizationRequest{Name: orgName}, client.WithAddress(viper.GetString("service_host")))
+	org, err := api.APIClient.GetOrganization(ctx, &v1.GetOrganizationRequest{Name: orgName}, client.WithAddress(viper.GetString("service_host")))
 	s.Stop()
 	if err != nil {
 		color.Red("\nUnable to set organization Error: %v", err)

@@ -24,7 +24,7 @@ import (
 	"github.com/itzmanish/go-micro/v2/metadata"
 	"github.com/itzmanish/slatomate/cmd/api"
 	"github.com/itzmanish/slatomate/cmd/utils"
-	"github.com/itzmanish/slatomate/proto/slatomate"
+	v1 "github.com/itzmanish/slatomate/proto/slatomate/v1"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -64,7 +64,7 @@ func Login(cmd *cobra.Command, args []string) error {
 	passowrdContent := utils.PromptContent{ErrorMsg: "Password is required", Label: "Password", Type: utils.PasswordPrompt}
 	email := utils.PromptGetInput(emailContent)
 	password := utils.PromptGetInput(passowrdContent)
-	user, err := api.APIClient.LoginUser(context.TODO(), &slatomate.User{Email: email, Password: password})
+	user, err := api.APIClient.LoginUser(context.TODO(), &v1.User{Email: email, Password: password})
 	if err != nil {
 		return err
 	}
@@ -82,7 +82,7 @@ func Whoami() {
 		return
 	}
 	ctx := metadata.Set(context.TODO(), "Authorization", ("APIKEY " + auth_token))
-	u, err := api.APIClient.GetUser(ctx, &slatomate.GetUserRequest{ApiKey: auth_token}, client.WithAddress(viper.GetString("service_host")))
+	u, err := api.APIClient.GetUser(ctx, &v1.GetUserRequest{ApiKey: auth_token}, client.WithAddress(viper.GetString("service_host")))
 	if err != nil {
 		color.Red("Got error: %s", err.Error())
 		return

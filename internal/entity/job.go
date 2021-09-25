@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/itzmanish/slatomate/proto/slatomate"
+	slatomate "github.com/itzmanish/slatomate/proto/slatomate/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 )
@@ -100,17 +100,17 @@ func DeserializeJob(in *Job) slatomate.Job {
 func GetTask(task Task) slatomate.Task {
 	switch task {
 	case StatusUpdate:
-		return slatomate.Task_STATUS_UPDATE
+		return slatomate.Task_TASK_STATUS_UPDATE
 	default:
-		return slatomate.Task_DEFAULT
+		return slatomate.Task_TASK_UNSPECIFIED
 	}
 }
 
 func GetTaskFromProtoTask(task slatomate.Task) Task {
 	switch task {
-	case slatomate.Task_STATUS_UPDATE:
+	case slatomate.Task_TASK_STATUS_UPDATE:
 		return StatusUpdate
-	case slatomate.Task_DEFAULT:
+	case slatomate.Task_TASK_UNSPECIFIED:
 		return NoOp
 	default:
 		return NoOp

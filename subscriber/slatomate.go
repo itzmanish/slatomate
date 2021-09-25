@@ -10,7 +10,7 @@ import (
 	"github.com/itzmanish/slatomate/internal/entity"
 	"github.com/itzmanish/slatomate/internal/repository"
 	"github.com/itzmanish/slatomate/internal/worker"
-	slatomate "github.com/itzmanish/slatomate/proto/slatomate"
+	slatomate "github.com/itzmanish/slatomate/proto/slatomate/v1"
 )
 
 type Slatomate struct {
