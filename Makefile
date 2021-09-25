@@ -1,6 +1,6 @@
 
 GOPATH:=$(shell go env GOPATH)
-GOOGLEPROTO=/home/manish/.local/include
+GOOGLEPROTO=proto
 MODIFY=Mproto/imports/api.proto=github.com/itzmanish/go-micro/v2/api/proto
 
 .PHONY: proto
