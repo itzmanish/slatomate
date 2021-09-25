@@ -1,3 +1,4 @@
 certs
-slatomate-service
+slatomate
+vendor
 .env

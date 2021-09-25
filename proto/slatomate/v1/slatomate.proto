@@ -1,11 +1,41 @@
 syntax = "proto3";
 
 package slatomate.v1;
-option go_package="proto/slatomate/v1";
+option go_package="proto/gen/slatomate/v1";
 
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
+import "openapiv2/options/annotations.proto";
+
+option (openapiv2.options.openapiv2_swagger) = {
+info : {
+	title : "Slatomate Service"
+	version : "1.0"
+	contact : {
+	name : "Manish"
+	url : "https://github.com/itzmanish"
+	email : "itzmanish108@gmail.com"
+	};
+}
+;
+schemes :
+	[HTTP, HTTPS] consumes : "application/json" produces : "application/json"
+responses : {
+key:
+"404" value : {
+description:
+	"Returned when the resource does not exist." schema : {
+	json_schema : {
+	type:
+	STRING
+	};
+	};
+};
+};
+}
+;
+      
 
 service SlatomateService {
 	rpc Health(google.protobuf.Empty) returns (HealthResponse) {
@@ -105,7 +135,8 @@ service SlatomateService {
 	};
 	rpc GetJob (GetJobRequest) returns (Job){
 		option (google.api.http) = {
-			get : "/v1/slatomate/org/{org_id}/job/{id}{name}",
+			post : "/v1/slatomate/org/{org_id}/job",
+			body: "*"
 		      };
 	};
 	rpc DeleteJob (DeleteJobRequest) returns (google.protobuf.Empty){
@@ -115,7 +146,7 @@ service SlatomateService {
 	};
 	rpc GetAllJob (GetAllJobRequset) returns (GetAllJobResponse){
 		option (google.api.http) = {
-			get : "/v1/slatomate/org/{org_id}/job/{id}",
+			get : "/v1/slatomate/org/{org_id}/jobs",
 		      };
 	};
 }

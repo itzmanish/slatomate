@@ -8,7 +8,7 @@ import (
 	"github.com/itzmanish/go-micro/v2/logger"
 	"github.com/itzmanish/slatomate/internal/auth"
 	"github.com/itzmanish/slatomate/internal/entity"
-	slatomatepb "github.com/itzmanish/slatomate/proto/slatomate/v1"
+	slatomatepb "github.com/itzmanish/slatomate/proto/gen/slatomate/v1"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 

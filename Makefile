@@ -6,7 +6,7 @@ MODIFY=Mproto/imports/api.proto=github.com/itzmanish/go-micro/v2/api/proto
 .PHONY: proto
 proto:
 
-	protoc --proto_path=:. --proto_path=${GOOGLEPROTO} --lint_out=. --micro_out=${MODIFY}:. --go_out=${MODIFY}:. proto/slatomate/v1/slatomate.proto
+	protoc --proto_path=:. --proto_path=${GOOGLEPROTO} --lint_out=. --micro_out=${MODIFY}:. --go_out=${MODIFY}:. --openapiv2_out=. --openapiv2_opt=logtostderr=true proto/slatomate/v1/slatomate.proto
 
 .PHONY: build
 build: proto

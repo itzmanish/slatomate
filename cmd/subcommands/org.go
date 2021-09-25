@@ -11,7 +11,7 @@ import (
 	"github.com/itzmanish/go-micro/v2/client"
 	"github.com/itzmanish/slatomate/cmd/api"
 	"github.com/itzmanish/slatomate/cmd/utils"
-	v1 "github.com/itzmanish/slatomate/proto/slatomate/v1"
+	v1 "github.com/itzmanish/slatomate/proto/gen/slatomate/v1"
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"

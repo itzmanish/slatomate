@@ -16,7 +16,7 @@ import (
 	"github.com/itzmanish/slatomate/wrapper"
 	"github.com/joho/godotenv"
 
-	slatomate "github.com/itzmanish/slatomate/proto/slatomate/v1"
+	slatomate "github.com/itzmanish/slatomate/proto/gen/slatomate/v1"
 )
 
 var (

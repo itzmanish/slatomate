@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/itzmanish/go-micro/v2/client/grpc"
-	slatomate "github.com/itzmanish/slatomate/proto/slatomate/v1"
+	slatomate "github.com/itzmanish/slatomate/proto/gen/slatomate/v1"
 )
 
 var APIClient slatomate.SlatomateService
