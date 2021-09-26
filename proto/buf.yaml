@@ -1,4 +1,8 @@
 version: v1
+name: buf.build/itzmanish/slatomate
+deps:
+  - buf.build/googleapis/googleapis
+  - buf.build/grpc-ecosystem/grpc-gateway
 lint:
   use:
     - BASIC
