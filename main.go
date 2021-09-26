@@ -23,11 +23,11 @@ var (
 	SERVICE_NAME                      = "github.itzmanish.service.slatomate"
 	SERVICE_VERSION                   = "0.1.0"
 	NoAuthEndpoint  types.ArrayString = []string{
-		"Slatomate.CreateUser",
-		"Slatomate.LoginUser",
-		"Slatomate.AuthorizeOrganization",
-		"Slatomate.Me",
-		"Slatomate.Health",
+		"SlatomateService.CreateUser",
+		"SlatomateService.LoginUser",
+		"SlatomateService.AuthorizeOrganization",
+		"SlatomateService.Me",
+		"SlatomateService.Health",
 	}
 )
 
