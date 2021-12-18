@@ -2,6 +2,8 @@
 
 This is the Slatomate service
 
+- [API Doc](https://heymanish.stoplight.io/docs/slatomate/)
+
 Generated with
 
 ```
