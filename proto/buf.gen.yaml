@@ -2,6 +2,8 @@ version: v1
 managed:
   enabled: true
 plugins:
+  - name: graphql
+    out: gen
   - name: openapiv2
     out: gen/openapiv2
     opt: logtostderr=true

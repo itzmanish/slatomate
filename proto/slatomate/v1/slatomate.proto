@@ -7,6 +7,7 @@ import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "google/api/annotations.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
+import "graphql/graphql.proto";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
 info : {
@@ -38,17 +39,36 @@ description:
       
 
 service SlatomateService {
+
+	// gRPC service information
+	option (graphql.service) = {
+		host: "localhost:8081"
+		insecure: true
+	};
+
 	rpc Health(google.protobuf.Empty) returns (HealthResponse) {
 		option (google.api.http) = {
 			get : "/v1/slatomate/health",
-		      };
+		};
+		option (graphql.schema) = {
+			type: QUERY   // declare as Query
+			name: "health" // query name
+		  };
 	};
 
 	rpc CreateOrganization (CreateOrganizationRequest) returns (Organization) {
 		option (google.api.http) = {
 			post : "/v1/slatomate/org",
 			body : "*"
-		      };
+		    };
+			option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+			security: {
+				security_requirement: {
+					key: "ApiKeyAuth";
+					value: {};
+				}
+			}
+		};
 	};
 	
 	rpc AuthorizeOrganization (AuthorizeOrganizationRequest) returns (GenericResponse){
@@ -171,29 +191,29 @@ message HealthResponse {
 
 message CreateOrganizationRequest {
 	string name = 1;
-	string user_id = 3;
+	string user_id = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
 }
 
 message AuthorizeOrganizationRequest {
 	string code = 1;
 	string scope = 2;
-	string org_id = 3;
-	string user_id = 4;
+	string org_id = 3 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
+	string user_id = 4 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
 	string error = 5;
 	string state = 6;
 }
 
 message ValidateOrgAccessRequest{
-	string org_id = 1;
+	string org_id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
 }
 
 message ValidateOrgAccessResponse {
 	bool has_access = 1;
-	string user_id = 2;
+	string user_id = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
 }
 
 message GetAllOrganizationRequest{
-	string user_id = 1;
+	string user_id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
 }
 
 message GetAllOrganizationResponse{
@@ -202,18 +222,18 @@ message GetAllOrganizationResponse{
 }
 
 message GetOrganizationRequest{
-	string id = 1;
-	string user_id = 2;
+	string id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
+	string user_id = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
 	string name = 3;
 }
 
 message DeleteOrganizationRequest{
-	string id = 1;
-	string user_id = 2;
+	string id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
+	string user_id = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
 }
 
 message Organization {
-	string id = 1;
+	string id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
 	string name = 2;
 	string slack_apikey = 3;
 	string user = 4;
@@ -229,13 +249,13 @@ message CreateUserRequest {
 }
 
 message GetUserRequest {
-	string id = 1;
+	string id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
 	string email = 2;
 	string api_key = 3;
 }
 
 message DeleteUserRequest {
-	string id = 1;
+	string id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
 }
 
 message GetAllUserResponse {
@@ -244,12 +264,12 @@ message GetAllUserResponse {
 }
 
 message UpdateUserRequest {
-	string id = 1;
+	string id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
 	string name = 2;
 }
 
 message GenerateAPIKeyRequest{
-	string id = 1;
+	string id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
 }
 
 message GenerateAPIKeyResponse {
@@ -261,7 +281,7 @@ message APIKeyRequest {
 }
 
 message User {
-	string id = 1;
+	string id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
 	string name = 2;
 	string email = 3;
 	string password = 4;
@@ -275,18 +295,18 @@ message User {
 
 
 message GetJobRequest{
-	string id = 1;
-	string org_id = 2;
+	string id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
+	string org_id = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
 	string name = 3;
 }
 
 message GetAllJobRequset {
-	string org_id = 1;
+	string org_id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
 }
 
 message DeleteJobRequest {
-	string id = 1;
-	string org_id = 2;
+	string id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
+	string org_id = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
 }
 
 message GetAllJobResponse {
@@ -295,8 +315,8 @@ message GetAllJobResponse {
 }
 
 message Job {
-	string id = 1;
-	string org_id = 2;
+	string id = 1 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
+	string org_id = 2 [(grpc.gateway.protoc_gen_openapiv2.options.openapiv2_field) = {pattern: "[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}", min_length: 1}];
 	string name = 3;
 	string schedule_at = 4;
 	Task task = 5;

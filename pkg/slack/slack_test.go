@@ -12,7 +12,8 @@ import (
 var testSlackClient *SlackClient
 
 func TestNewClient(t *testing.T) {
-	testSlackClient = NewSlackClient("xoxp-1001856848789-2040990405655-2381966723552-c657a0c560681078666336217006abd2")
+	// xoxp-1001856848789-2040990405655-2381966723552-c657a0c560681078666336217006abd2
+	testSlackClient = NewSlackClient("xoxb-1300413974134-2487927930695-zaK02EB7bk1YcF1DwwS5UgJ5")
 	assert.NotNil(t, testSlackClient)
 }
 
